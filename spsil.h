@@ -1,3 +1,4 @@
+extern int linecount;
 struct define
 {
 	char *name;
@@ -21,3 +22,4 @@ struct tree
 };
 struct define *root=NULL;
 FILE *fp;
+char table[8][30];
