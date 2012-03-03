@@ -15,9 +15,13 @@
 \contentsline {section}{\numberline {6}Expressions}{5}{section.6}
 \contentsline {subsection}{\numberline {6.1}Arithmetic Expressions}{5}{subsection.6.1}
 \contentsline {subsection}{\numberline {6.2}Logical Expressions}{6}{subsection.6.2}
-\contentsline {section}{\numberline {7}Statements}{6}{section.7}
-\contentsline {subsection}{\numberline {7.1}Assignment Statement}{6}{subsection.7.1}
-\contentsline {subsection}{\numberline {7.2}If Statement}{6}{subsection.7.2}
-\contentsline {subsection}{\numberline {7.3}While Statement}{7}{subsection.7.3}
-\contentsline {subsection}{\numberline {7.4}Return statement}{7}{subsection.7.4}
-\contentsline {subsection}{\numberline {7.5}Read/Write statements}{7}{subsection.7.5}
+\contentsline {subsection}{\numberline {6.3}String Comparison}{6}{subsection.6.3}
+\contentsline {section}{\numberline {7}Addressing}{6}{section.7}
+\contentsline {section}{\numberline {8}Statements}{6}{section.8}
+\contentsline {subsection}{\numberline {8.1}Define Statement}{7}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Alias Statement}{7}{subsection.8.2}
+\contentsline {subsection}{\numberline {8.3}Assignment Statement}{7}{subsection.8.3}
+\contentsline {subsection}{\numberline {8.4}If Statement}{7}{subsection.8.4}
+\contentsline {subsection}{\numberline {8.5}While Statement}{8}{subsection.8.5}
+\contentsline {subsection}{\numberline {8.6}ireturn Statement}{8}{subsection.8.6}
+\contentsline {subsection}{\numberline {8.7}Read/Write Statements}{8}{subsection.8.7}

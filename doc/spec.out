@@ -14,9 +14,13 @@
 \BOOKMARK [1][-]{section.6}{Expressions}{}
 \BOOKMARK [2][-]{subsection.6.1}{Arithmetic Expressions}{section.6}
 \BOOKMARK [2][-]{subsection.6.2}{Logical Expressions}{section.6}
-\BOOKMARK [1][-]{section.7}{Statements}{}
-\BOOKMARK [2][-]{subsection.7.1}{Assignment Statement}{section.7}
-\BOOKMARK [2][-]{subsection.7.2}{If Statement}{section.7}
-\BOOKMARK [2][-]{subsection.7.3}{While Statement}{section.7}
-\BOOKMARK [2][-]{subsection.7.4}{Return statement}{section.7}
-\BOOKMARK [2][-]{subsection.7.5}{Read/Write statements}{section.7}
+\BOOKMARK [2][-]{subsection.6.3}{String Comparison}{section.6}
+\BOOKMARK [1][-]{section.7}{Addressing}{}
+\BOOKMARK [1][-]{section.8}{Statements}{}
+\BOOKMARK [2][-]{subsection.8.1}{Define Statement}{section.8}
+\BOOKMARK [2][-]{subsection.8.2}{Alias Statement}{section.8}
+\BOOKMARK [2][-]{subsection.8.3}{Assignment Statement}{section.8}
+\BOOKMARK [2][-]{subsection.8.4}{If Statement}{section.8}
+\BOOKMARK [2][-]{subsection.8.5}{While Statement}{section.8}
+\BOOKMARK [2][-]{subsection.8.6}{ireturn Statement}{section.8}
+\BOOKMARK [2][-]{subsection.8.7}{Read/Write Statements}{section.8}

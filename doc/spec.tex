@@ -57,7 +57,7 @@ The following are the reserved words in SPSIL and it cannot be used as names of 
 
 \begin{tabular}{c c c c c }
 \kw{alias} 		& 	\kw{else} 		& 	\kw{if} 		&   \kw{read} 	&   \kw{while}     \\
-\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	\kw{store} 	&    \\
+\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	\kw{store} 	&  \kw{strcmp}  \\
 \kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	&
 \end{tabular}
 
@@ -100,7 +100,7 @@ SPSIL doesn't allow the use of declared variables. Instead a fixed set of regist
 \hline
 R0-R7 & Program Registers \\
 \hline
-R7-R15 & Kernel Registers \\
+R8-R15 & Kernel Registers \\
 \hline
 BP 		& Base Pointer \\
 \hline
@@ -157,23 +157,30 @@ Examples of addressing : [1024], [R9], [FILE\_TABLE], [CONSTANT]
 
 %----------------------------Expressions-------------------------_%
 \section{Expressions}
-An expression specifies the computation of a value by applying operators and functions to operands. Function call in SPSIL are treated as expressions, and the value of the expression is its return value. SPSIL supports arithmetic and logical expressions
-
-
+An expression specifies the computation of a value by applying operators and functions to operands. SPSIL supports arithmetic and logical expressions.
 
 \subsection{Arithmetic Expressions}
 
-Any integer value, variable, function returning an integer or 2 or more arithmetic expressions connected by arithmetic operators termed as arithmetic expressions. SPSIL provides five arithmetic operators, viz., +, -, *, / (Integer Division) and \% (Modulo operator) through which arithmetic expressions may be combined. Expression syntax and semantics are similar to standard practice in programming languages and normal rules of precedence, associativity and paranthesization hold. SPSIL is strongly typed, and hence the types of the oprands must match the operation. 
+Registers, constatns, and 2 or more arithmetic operations connected using arithmetic operators are categorized as arithmetic expressions. SPSIL provides five arithmetic operators, viz., +, -, *, / (Integer Division) and \% (Modulo operator) through which arithmetic expressions may be combined. Expression syntax and semantics are similar to standard practice in programming languages and normal rules of precedence, associativity and paranthesization hold. 
 
 
 \subsection{Logical Expressions}
 
 Logical expressions may be formed by combining arithmetic expressions using relational operators. The relational operators supported by SPSIL are \begin{verbatim}  <, >, <=, >=, ==, !=
 \end{verbatim}
-Standard  meanings apply to these operators. The operators take two arithmetic expressions as operands and the result will be a boolean value, either of 1(true) or 0(false). Only realational operator that can be applied to two strings is == (to check equality). This also considered as a Logical expression. Logical expressions themselves may be combined using logical operators, \&\& (logical and) ,  $\Vert$ (logical or) and ! (not).
+Standard  meanings apply to these operators. A lrelational operator will take in two arguments and return 1 if the relation is valid and 0 otherwise. Logical expressions themselves may be combined using logical operators, \&\& (logical and) ,  $\Vert$ (logical or) and ! (not).
+
+\subsection{String Comparison}
+The only operation that can be performed on strings stored in memory is string camparison. \textbf{strcmp} is used to compare two strings whose address is stored in the registers that are given as operands. \\
+
+ e.g. \textit{strcmp(R9,R10);}
 
 
+%----------------------Addressing---------------------------%
+\section{Addressing}
+SPSIL allows the use of directly addressing memory words of ESIM. A word in the memory is accessed by specifying the word number within [ ]. An arithmetic expression can be used to specify the word number. This will correspond to the value stored in the given address (word number). An expression can be assigned to an address. But an addressing element cannot be used in an arithmetic expression. \\
 
+Examples of addressing: [1024], [R9], [R10+R11+128], [FAT] etc.
 
 %-----------------________Statements---------------------------_%
 \section{Statements}
@@ -182,19 +189,25 @@ Statements control the execution of the program. All statements in SPSIL are ter
 
 
 
+\subsection{Define Statement}
+Define statement is used to define a symbolic name for a constant. Define stements should be the first block of an SPSIL program. The keyword \textbf{define} is used to associate a constant integer value to a name. \\
+
+\textit{ \textbf{define} constant\_name value; }
+
+
+\subsection{Alias Statement}
+An \textbf{alias} is used to refer to any register in the register set using a different name. \textbf{Alias} statements can be used anywhere in the program. Only the latest alias for any particular register can be used.  \\
+\indent \textit{ \textbf{alias}  alias\_name register\_name } \\
 
 
 \subsection{Assignment Statement}
-The SPSIL assignment statement assigns the value of an expression to a variable, or an indexed array of the same type or a string value to a string variable. \textbf{=} is known as the assignment operator. Initialization during declaration is not allowed in SPSIL. The general syntax is as follows \\
-\textit{ variable\_name = string\_value / array\_variable / expression }
+The SPSIL assignment statement assigns the value of an expression to a register  or a memory address. textbf{=} is known as the assignment operator. The operand on the right hand side of the operator is assigned to the left hand side. The general syntax is as follows \\
 
-
-
-
+\indent \textit{ Register / [Address] = Expression / [Address] }
 
 
 \subsection{If Statement}
-\textbf{If} statements specify the conditional execution of two branches according to the value of a boolean expression. If the expression evaluates to true, the \textbf{if} branch is executed, otherwise, if present, the \textbf{else}  branch is executed. The \textbf{else} part is optional. The general syntax is as follows  \\
+\textbf{If} statements specify the conditional execution of two branches according to the value of a logical expression. If the expression evaluates to 1, the \textbf{if} branch is executed, otherwise the \textbf{else}  branch is executed if it exists. The \textbf{else} part is optional. The general syntax is as follows  \\
 
 \textit{
 \textbf{if} (logical expression) \textbf{then}  \\
@@ -207,7 +220,7 @@ The SPSIL assignment statement assigns the value of an expression to a variable,
 
 
 \subsection{While Statement}
-\textbf{While} statement iteratively executes a set of statements based on a condition which is a logical expression.  The statements are iteratively executed as long as the logical expression evaluates to true.
+\textbf{While} statement iteratively executes a set of statements based on the value of a logical expressions.  The statements are iteratively executed as long as the logical expression evaluates to 1.\\
 
 \textit{
 \textbf{while} (logical expression) \textbf{do}  \\
@@ -216,25 +229,14 @@ The SPSIL assignment statement assigns the value of an expression to a variable,
 }
 
 
-\subsection{Alias Statement}
-The SPSIL assignment statement assigns the value of an expression to a variable, or an indexed array of the same type or a string value to a string variable. \textbf{=} is known as the assignment operator. Initialization during declaration is not allowed in SPSIL. The general syntax is as follows \\
-\textit{ variable\_name = string\_value / array\_variable / expression }
-
-
-\subsection{Define Statement}
-The SPSIL assignment statement assigns the value of an expression to a variable, or an indexed array of the same type or a string value to a string variable. \textbf{=} is known as the assignment operator. Initialization during declaration is not allowed in SPSIL. The general syntax is as follows \\
-\textit{ variable\_name = string\_value / array\_variable / expression }
-
-
-
-\subsection{ireturn statement}
+\subsection{ireturn Statement}
 \textbf{ireturn} statement is used to pass control from kernel mode to user mode. The \textbf{ireturn} is used at the end of an interrupt code.
 
 \textit{\textbf{ireturn};}
 
 
-\subsection{Read/Write statements}
-The standard input and output statements in SPSIL are \textbf{read} and \textbf{write} respectively. The read statement reads an integer value into any register in the register set. The write statement outputs an integer, a string literal, the value inside a register, or a constant.
+\subsection{Read/Write Statements}
+The standard input and output statements in SPSIL are \textbf{read} and \textbf{write} respectively. The read statement reads an integer value into any register in the register set. The write statement outputs an integer, a string literal, the value inside a register, or a constant.\\
 
 \textit{\textbf{read} variable\_name;}
 

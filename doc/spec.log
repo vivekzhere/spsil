@@ -1,6 +1,5 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.3.3)  3 MAR 2012 02:58
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.3.3)  4 MAR 2012 01:26
 entering extended mode
- file:line:error style messages enabled.
  %&-line parsing enabled.
 **spec.tex
 (./spec.tex
@@ -272,17 +271,37 @@ Underfull \hbox (badness 10000) in paragraph at lines 125--126
  []
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 197--198
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 205--206
+Underfull \hbox (badness 10000) in paragraph at lines 181--182
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 193--194
 
  []
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 216--217
+Underfull \hbox (badness 10000) in paragraph at lines 199--201
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 204--205
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 210--211
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 218--219
 
  []
 
@@ -291,20 +310,25 @@ Underfull \hbox (badness 10000) in paragraph at lines 223--224
 
  []
 
-
+[7]
 Underfull \hbox (badness 10000) in paragraph at lines 229--230
 
  []
 
-[7] (./spec.aux) ) 
+
+Underfull \hbox (badness 10000) in paragraph at lines 239--240
+
+ []
+
+[8] (./spec.aux) ) 
 Here is how much of TeX's memory you used:
- 4857 strings out of 495061
- 71662 string characters out of 1182622
- 138531 words of memory out of 3000000
- 7963 multiletter control sequences out of 15000+50000
+ 4866 strings out of 495061
+ 71778 string characters out of 1182622
+ 139531 words of memory out of 3000000
+ 7967 multiletter control sequences out of 15000+50000
  9853 words of font info for 35 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 38i,7n,36p,580b,293s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,7n,36p,474b,293s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx
 10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></us
 r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/share/t
@@ -315,9 +339,9 @@ fonts/cm/cmr17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cms
 y10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></u
 sr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/te
 xmf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on spec.pdf (7 pages, 167522 bytes).
+Output written on spec.pdf (8 pages, 173756 bytes).
 PDF statistics:
- 200 PDF objects out of 1000 (max. 8388607)
- 32 named destinations out of 1000 (max. 500000)
- 177 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 227 PDF objects out of 1000 (max. 8388607)
+ 37 named destinations out of 1000 (max. 500000)
+ 209 words of extra memory for PDF output out of 10000 (max. 10000000)
 
