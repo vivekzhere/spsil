@@ -9,19 +9,19 @@
 \contentsline {subsection}{\numberline {2.6}Literals}{4}{subsection.2.6}
 \contentsline {section}{\numberline {3}Register Set}{4}{section.3}
 \contentsline {subsection}{\numberline {3.1}Aliasing}{4}{subsection.3.1}
-\contentsline {section}{\numberline {4}Named Constants}{4}{section.4}
-\contentsline {subsection}{\numberline {4.1}Predefined Constants}{5}{subsection.4.1}
+\contentsline {section}{\numberline {4}Constants}{4}{section.4}
+\contentsline {subsection}{\numberline {4.1}Predefined Constants}{4}{subsection.4.1}
 \contentsline {section}{\numberline {5}Addresses}{5}{section.5}
 \contentsline {section}{\numberline {6}Expressions}{5}{section.6}
 \contentsline {subsection}{\numberline {6.1}Arithmetic Expressions}{5}{subsection.6.1}
-\contentsline {subsection}{\numberline {6.2}Logical Expressions}{6}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.2}Logical Expressions}{5}{subsection.6.2}
 \contentsline {subsection}{\numberline {6.3}String Comparison}{6}{subsection.6.3}
 \contentsline {section}{\numberline {7}Addressing}{6}{section.7}
 \contentsline {section}{\numberline {8}Statements}{6}{section.8}
-\contentsline {subsection}{\numberline {8.1}Define Statement}{7}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.1}Define Statement}{6}{subsection.8.1}
 \contentsline {subsection}{\numberline {8.2}Alias Statement}{7}{subsection.8.2}
 \contentsline {subsection}{\numberline {8.3}Assignment Statement}{7}{subsection.8.3}
 \contentsline {subsection}{\numberline {8.4}If Statement}{7}{subsection.8.4}
-\contentsline {subsection}{\numberline {8.5}While Statement}{8}{subsection.8.5}
+\contentsline {subsection}{\numberline {8.5}While Statement}{7}{subsection.8.5}
 \contentsline {subsection}{\numberline {8.6}ireturn Statement}{8}{subsection.8.6}
 \contentsline {subsection}{\numberline {8.7}Read/Write Statements}{8}{subsection.8.7}
