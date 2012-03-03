@@ -10,17 +10,16 @@
 \BOOKMARK [2][-]{subsection.3.1}{Aliasing}{section.3}
 \BOOKMARK [1][-]{section.4}{Constants}{}
 \BOOKMARK [2][-]{subsection.4.1}{Predefined Constants}{section.4}
-\BOOKMARK [1][-]{section.5}{Addresses}{}
-\BOOKMARK [1][-]{section.6}{Expressions}{}
-\BOOKMARK [2][-]{subsection.6.1}{Arithmetic Expressions}{section.6}
-\BOOKMARK [2][-]{subsection.6.2}{Logical Expressions}{section.6}
-\BOOKMARK [2][-]{subsection.6.3}{String Comparison}{section.6}
-\BOOKMARK [1][-]{section.7}{Addressing}{}
-\BOOKMARK [1][-]{section.8}{Statements}{}
-\BOOKMARK [2][-]{subsection.8.1}{Define Statement}{section.8}
-\BOOKMARK [2][-]{subsection.8.2}{Alias Statement}{section.8}
-\BOOKMARK [2][-]{subsection.8.3}{Assignment Statement}{section.8}
-\BOOKMARK [2][-]{subsection.8.4}{If Statement}{section.8}
-\BOOKMARK [2][-]{subsection.8.5}{While Statement}{section.8}
-\BOOKMARK [2][-]{subsection.8.6}{ireturn Statement}{section.8}
-\BOOKMARK [2][-]{subsection.8.7}{Read/Write Statements}{section.8}
+\BOOKMARK [1][-]{section.5}{Expressions}{}
+\BOOKMARK [2][-]{subsection.5.1}{Arithmetic Expressions}{section.5}
+\BOOKMARK [2][-]{subsection.5.2}{Logical Expressions}{section.5}
+\BOOKMARK [2][-]{subsection.5.3}{String Comparison}{section.5}
+\BOOKMARK [1][-]{section.6}{Addressing}{}
+\BOOKMARK [1][-]{section.7}{Statements}{}
+\BOOKMARK [2][-]{subsection.7.1}{Define Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.2}{Alias Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.3}{Assignment Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.4}{If Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.5}{While Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.6}{ireturn Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.7}{Load / Store Statements}{section.7}
