@@ -1,0 +1,22 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Lexical Elements}{}
+\BOOKMARK [2][-]{subsection.2.1}{Comments and White Spaces}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Keywords}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Operators and Delimiters}{section.2}
+\BOOKMARK [2][-]{subsection.2.4}{Registers}{section.2}
+\BOOKMARK [2][-]{subsection.2.5}{Identifiers}{section.2}
+\BOOKMARK [2][-]{subsection.2.6}{Literals}{section.2}
+\BOOKMARK [1][-]{section.3}{Register Set}{}
+\BOOKMARK [2][-]{subsection.3.1}{Aliasing}{section.3}
+\BOOKMARK [1][-]{section.4}{Named Constants}{}
+\BOOKMARK [2][-]{subsection.4.1}{Predefined Constants}{section.4}
+\BOOKMARK [1][-]{section.5}{Addresses}{}
+\BOOKMARK [1][-]{section.6}{Expressions}{}
+\BOOKMARK [2][-]{subsection.6.1}{Arithmetic Expressions}{section.6}
+\BOOKMARK [2][-]{subsection.6.2}{Logical Expressions}{section.6}
+\BOOKMARK [1][-]{section.7}{Statements}{}
+\BOOKMARK [2][-]{subsection.7.1}{Assignment Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.2}{If Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.3}{While Statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.4}{Return statement}{section.7}
+\BOOKMARK [2][-]{subsection.7.5}{Read/Write statements}{section.7}

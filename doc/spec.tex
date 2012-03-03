@@ -1,0 +1,248 @@
+\documentclass[11pt]{article}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage[bookmarks]{hyperref}
+
+
+\title{SPSIL \\ Language Specification \\
+Version 1.0}
+\author{Dr. K. Muralikrishnan  \\ \texttt{kmurali@nitc.ac.in} \\ {NIT Calicut} }
+
+
+\hypersetup{
+colorlinks=false,
+urlcolor=cyan,
+pdfborder= 0 0 0
+}
+
+
+\begin{document}
+ \newcommand{\kw}[1]{\texttt{#1}}
+
+%.......................Title Page.................................>%
+\maketitle
+
+\pagebreak
+%......................Table of Contents............................%
+\thispagestyle{plain}
+
+\tableofcontents
+\pagebreak
+
+%...............................Introduction..........................%
+
+\section{Introduction}
+\paragraph{}
+\textit{SPSIL} or \textit{System Programmer's Simple Integer Language} is an untyped programming language designed for implementation of an operating system on ESIM \textit{(Extended Simple Integer Machine)} architecture. The language is minimilistic and consists of only basic constructs required for the implementation. Programming using SPSIL requires a  basic understanding of the underlying ESIM architecture and operating system concepts. 
+
+
+
+%-----------------------------Lexical Elements-------------------------%
+\section{Lexical Elements}
+
+
+
+
+%*********%
+\subsection{Comments and White Spaces}
+
+SPSIL allows only line comments. Line comments start with the character sequence \textbf{//} and stop at the end of the line. 
+White spaces in the program including tabs, newline and horizontal spaces are ignored.
+
+
+%*********%
+\subsection{Keywords}
+The following are the reserved words in SPSIL and it cannot be used as names of constatns.
+
+\begin{tabular}{c c c c c }
+\kw{alias} 		& 	\kw{else} 		& 	\kw{if} 		&   \kw{read} 	&   \kw{while}     \\
+\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	\kw{store} 	&    \\
+\kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	&
+\end{tabular}
+
+
+
+
+%*********%
+\subsection{Operators and Delimiters}
+
+The following are the operators and delimiters in SPSIL   \\
+
+\begin{tabular}{c c c c c c c c c c c c }
+( 		 			& 		) 		& 			;		 &			[		&		 ]    &
+/		 			& 		*		 & 		+ 		 & 		-  		& 		\% 		  \\
+\textgreater  		& 	   \textless   &  \textgreater = 	 &  \textless =	&	    !=		&	==	  &	=  &  \&\&  	  &		$\Vert$	&	!	\\
+\end{tabular}
+
+
+%*********%
+\subsection{Registers}
+SPSIL allow the use of 19 registers for various operations.(R0-R15, BP, SP, IP)
+
+%*********%
+\subsection{Identifiers}
+Identifiers are used for defining names for constants as well as aliasing registers in the register set. Identifiers should start with an alphabet but may contain both alphabets, digits and/or underscore (\_). No other special characters are allowed in identifers.  
+
+%*********%
+\subsection{Literals}
+There are integer literals and string literals in SPSIL. An integer literal is a sequence of digits representing an integer.
+Negative integers are represented with a negative sign preceding the sequence of digits. Any sequence of characters enclosed within double quotes (") are considered as string literals. However SPSIL restricts string literals to size of atmost 16 characters including the '\textbackslash 0' character which is implicitly appended at the end of a string value. 
+
+
+
+%-----------------------------Registers-------------------------%%
+\section{Register Set}
+
+SPSIL doesn't allow the use of declared variables. Instead a fixed set of registers is provided. The register set in SPSIL contains 19 registers. There is a direct mapping between the registers to the machine registers in ESIM.   \\
+
+\begin{tabular}{| c | c | }
+\hline
+R0-R7 & Program Registers \\
+\hline
+R7-R15 & Kernel Registers \\
+\hline
+BP 		& Base Pointer \\
+\hline
+SP		& Stack Pointer \\
+\hline
+IP		& Instruction Pointer \\
+\hline
+\end{tabular}
+
+
+\subsection{Aliasing}
+Registers in the register can be referred to by using a different name. A name is assigned to a particular register using the \textbf{alias} keyword. Each register can be assigned to only one alias at any particular point of time. However, a particular register can be assigned to a different alias at a later point. No two registers can have the same alias name simulatneously.
+
+
+
+%-----------------------------Constants-------------------------%%
+\section{Named Constants}
+Symbolic names can be assigned to constants using the \textbf{define} keyword. Unlike aliasing, two or more symbolic names can be assigned to the same constant. 
+\subsection{Predefined Constants}
+SPSIL provides a set of predefined named constants. These predefined names can also be reassigned to different constatns explicitly by the user. The predefined set of constants are mostly the starting addresses in memory for various OS components..
+
+The predefined set of constants provided in SPSIL are \\
+
+\begin{tabular}{| c | c |}
+\hline
+\textbf{Name} & \textbf{Default Value} \\
+\hline
+SCRATCHPAD 	& 	256 \\
+\hline
+PAGE\_TABLE 	& 	512  \\
+\hline
+MEM\_LIST 	&	576 	\\
+\hline
+FILE\_TABLE 	& 	640		\\
+\hline
+READY\_LIST 	& 	736	\\
+\hline
+PROC\_TABLE 	& 	767 \\
+\hline
+FAT 		& 	1024    \\
+\hline
+DISK\_LIST 	& 	1536 	\\
+\hline
+USER\_PROG 	& 	1792	\\
+\hline
+INTERRUPT & 	13824	\\
+\hline
+\end{tabular}
+
+\section{Addresses}
+The memory of the machine can be directly accessed. A word in the memory is accessed by specifying the word number within [ ]. A number, a register, or a constant can be used to specify the word number in the memory.
+
+Examples of addressing : [1024], [R9], [FILE\_TABLE], [CONSTANT]
+
+%----------------------------Expressions-------------------------_%
+\section{Expressions}
+An expression specifies the computation of a value by applying operators and functions to operands. Function call in SPSIL are treated as expressions, and the value of the expression is its return value. SPSIL supports arithmetic and logical expressions
+
+
+
+\subsection{Arithmetic Expressions}
+
+Any integer value, variable, function returning an integer or 2 or more arithmetic expressions connected by arithmetic operators termed as arithmetic expressions. SPSIL provides five arithmetic operators, viz., +, -, *, / (Integer Division) and \% (Modulo operator) through which arithmetic expressions may be combined. Expression syntax and semantics are similar to standard practice in programming languages and normal rules of precedence, associativity and paranthesization hold. SPSIL is strongly typed, and hence the types of the oprands must match the operation. 
+
+
+\subsection{Logical Expressions}
+
+Logical expressions may be formed by combining arithmetic expressions using relational operators. The relational operators supported by SPSIL are \begin{verbatim}  <, >, <=, >=, ==, !=
+\end{verbatim}
+Standard  meanings apply to these operators. The operators take two arithmetic expressions as operands and the result will be a boolean value, either of 1(true) or 0(false). Only realational operator that can be applied to two strings is == (to check equality). This also considered as a Logical expression. Logical expressions themselves may be combined using logical operators, \&\& (logical and) ,  $\Vert$ (logical or) and ! (not).
+
+
+
+
+%-----------------________Statements---------------------------_%
+\section{Statements}
+
+Statements control the execution of the program. All statements in SPSIL are terminated with a semicolon ;
+
+
+
+
+
+\subsection{Assignment Statement}
+The SPSIL assignment statement assigns the value of an expression to a variable, or an indexed array of the same type or a string value to a string variable. \textbf{=} is known as the assignment operator. Initialization during declaration is not allowed in SPSIL. The general syntax is as follows \\
+\textit{ variable\_name = string\_value / array\_variable / expression }
+
+
+
+
+
+
+\subsection{If Statement}
+\textbf{If} statements specify the conditional execution of two branches according to the value of a boolean expression. If the expression evaluates to true, the \textbf{if} branch is executed, otherwise, if present, the \textbf{else}  branch is executed. The \textbf{else} part is optional. The general syntax is as follows  \\
+
+\textit{
+\textbf{if} (logical expression) \textbf{then}  \\
+ \indent \indent statements; \\
+\indent \textbf{else} \\
+\indent  \indent statements; \\
+\indent \textbf{endif;}  \\
+}
+
+
+
+\subsection{While Statement}
+\textbf{While} statement iteratively executes a set of statements based on a condition which is a logical expression.  The statements are iteratively executed as long as the logical expression evaluates to true.
+
+\textit{
+\textbf{while} (logical expression) \textbf{do}  \\
+ \indent \indent statements; \\
+\indent \textbf{endwhile;}  \\
+}
+
+
+\subsection{Alias Statement}
+The SPSIL assignment statement assigns the value of an expression to a variable, or an indexed array of the same type or a string value to a string variable. \textbf{=} is known as the assignment operator. Initialization during declaration is not allowed in SPSIL. The general syntax is as follows \\
+\textit{ variable\_name = string\_value / array\_variable / expression }
+
+
+\subsection{Define Statement}
+The SPSIL assignment statement assigns the value of an expression to a variable, or an indexed array of the same type or a string value to a string variable. \textbf{=} is known as the assignment operator. Initialization during declaration is not allowed in SPSIL. The general syntax is as follows \\
+\textit{ variable\_name = string\_value / array\_variable / expression }
+
+
+
+\subsection{ireturn statement}
+\textbf{ireturn} statement is used to pass control from kernel mode to user mode. The \textbf{ireturn} is used at the end of an interrupt code.
+
+\textit{\textbf{ireturn};}
+
+
+\subsection{Read/Write statements}
+The standard input and output statements in SPSIL are \textbf{read} and \textbf{write} respectively. The read statement reads an integer value into any register in the register set. The write statement outputs an integer, a string literal, the value inside a register, or a constant.
+
+\textit{\textbf{read} variable\_name;}
+
+\textit{\textbf{write} expression;}
+
+
+
+
+
+
+\end{document}
