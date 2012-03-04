@@ -7,12 +7,12 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD READ STORE THEN WHILE PRINT REG NUM ASG OPER1 OPER2 RELOP LOGOP NEGOP ID STRING
-%type<n> IF IRETURN LOAD READ STORE WHILE PRINT REG NUM ASG OPER1 OPER2 RELOP LOGOP NEGOP ID STRING stmtlist stmt expr ids
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE PRINT REG NUM ASG ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID
+%type<n> IF IRETURN LOAD STORE WHILE PRINT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID STRING stmtlist stmt expr ids
 %left LOGOP
 %left RELOP  
-%left OPER1		// + and -
-%left OPER2		// * , / and %
+%left ARITHOP1		// + and -
+%left ARITHOP2		// * , / and %
 %right NEGOP
 %left UMIN		// unary minus
 %%
@@ -33,9 +33,7 @@ stmtlist:	stmtlist stmt 				{$$=NULL;
 										}
 			;
 
-stmt:		ids ASG expr ';'	 		{$$=NULL;
-										}
-			|READ '(' ids ')' ';'		{$$=NULL;
+stmt:		ids ASSIGNOP expr ';'	 		{$$=NULL;
 										}
 			|PRINT '(' expr ')' ';'		{$$=NULL;
 										}			
@@ -49,23 +47,21 @@ stmt:		ids ASG expr ';'	 		{$$=NULL;
 																}
 			;
 				
-expr:		expr OPER1 expr				{$$=NULL;
+expr:		expr ARITHOP1 expr				{$$=NULL;
 										}
-			|expr OPER2 expr			{$$=NULL;
+			|expr ARITHOP2 expr			{$$=NULL;
 										}
 			|expr RELOP expr 			{$$=NULL;
 										}
 			|expr LOGOP expr			{$$=NULL;
 										}
-			|NEGOP expr					{$$=NULL;
+			|NOTOP expr					{$$=NULL;
 										}
 			|'('expr')'					{$$=$2;
 										}
-			|OPER1 expr	%prec UMIN		{$$=NULL;
+			|ARITHOP1 expr	%prec UMIN		{$$=NULL;
 										}
 			|NUM						{$$=$1;
-										}
-			|STRING						{$$=NULL;
 										}
 			|ids						{$$=$1;
 										}
@@ -80,9 +76,7 @@ ids:	ID					{$$=NULL;
 int main (void)
 {	
 	fp=fopen("./sim/sim.asm","w");
-	fprintf(fp,"START\n");
-	fprintf(fp,"MOV SP,0\n");
-	fprintf(fp,"MOV BP,0\n");	
+	fprintf(fp,"START\n");	
 	return yyparse();
 }
 
