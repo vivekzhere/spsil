@@ -187,17 +187,17 @@ void func(int, char, char*, int);
 
 (=)			{
 				func(2,'=',NULL,-1);
-				return ASG;
+				return ASSIGNOP;
 			}
 			
 [-+]			{
 				func(0,*yytext,NULL,-1);
-				return OPER1;			
+				return ARITHOP1;			
 			}
 			
 [*/%]			{
 				func(0,*yytext,NULL,-1);
-				return OPER2;			
+				return ARITHOP2;			
 			}
 			
 [<>]			{
@@ -237,7 +237,7 @@ void func(int, char, char*, int);
 			
 "!"			{
 				func(1,'x',NULL,-1);
-				return NEGOP;
+				return NOTOP;
 			}
 		
 [a-zA-Z][a-zA-Z0-9]*	{
