@@ -44,7 +44,7 @@ stmt:		ids ASSIGNOP expr ';'	 		{
 		|PRINT '(' expr ')' ';'			{
 								$$=NULL;
 							}			
-		|IF expr THEN stmtlist ENDIF ';'		{
+		|IF expr THEN stmtlist ENDIF ';'	{
 								$$=NULL;
 							}								
 		|IF expr THEN stmtlist
