@@ -1,11 +1,17 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.3.3)  4 MAR 2012 03:17
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.26)  5 MAR 2012 01:22
 entering extended mode
  %&-line parsing enabled.
 **spec.tex
 (./spec.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
-yphenation, loaded.
+yphenation, farsi, arabic, croatian, bulgarian, ukrainian, russian, czech, slov
+ak, danish, dutch, finnish, french, basque, ngerman, german, german-x-2009-06-1
+9, ngerman-x-2009-06-19, ibycus, monogreek, greek, ancientgreek, hungarian, san
+skrit, italian, latin, latvian, lithuanian, mongolian2a, mongolian, bokmal, nyn
+orsk, romanian, irish, coptic, serbian, turkish, welsh, esperanto, uppersorbian
+, estonian, indonesian, interlingua, icelandic, kurmanji, slovenian, polish, po
+rtuguese, spanish, galician, catalan, swedish, ukenglish, pinyin, loaded.
 (/usr/share/texmf-texlive/tex/latex/base/article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
 (/usr/share/texmf-texlive/tex/latex/base/size11.clo
@@ -309,12 +315,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 227--228
 
 [7] [8] (./spec.aux) ) 
 Here is how much of TeX's memory you used:
- 4847 strings out of 495061
- 71470 string characters out of 1182622
- 138531 words of memory out of 3000000
- 7952 multiletter control sequences out of 15000+50000
+ 4847 strings out of 493848
+ 71470 string characters out of 1152823
+ 139511 words of memory out of 3000000
+ 8051 multiletter control sequences out of 15000+50000
  9853 words of font info for 35 fonts, out of 3000000 for 9000
- 28 hyphenation exceptions out of 8191
+ 714 hyphenation exceptions out of 8191
  38i,7n,36p,555b,348s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/
 cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
@@ -326,7 +332,7 @@ type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public
 /cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb
 ></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/shar
 e/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on spec.pdf (8 pages, 171630 bytes).
+Output written on spec.pdf (8 pages, 172055 bytes).
 PDF statistics:
  219 PDF objects out of 1000 (max. 8388607)
  36 named destinations out of 1000 (max. 500000)
