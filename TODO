@@ -1,0 +1,9 @@
+
+
+SPSIL-Doc
+	aliasing only for kernal registers.
+	aliasing not possible in while and if.
+APSIL-Doc
+	local declaration not inside if and while
+APSIL-Code
+	local declaration not inside if and while
