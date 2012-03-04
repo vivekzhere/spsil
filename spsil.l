@@ -11,7 +11,7 @@ struct tree
 {
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
-					r-read,		S-store,		w-while,	p-write
+					S-store,		w-while,	p-write
 					R-register  //value=0-15,20-SP,21-BP,22-IP
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
@@ -25,7 +25,7 @@ struct tree
 	struct tree *ptr1,*ptr2,*ptr3;
 };
 
-void func(int, char, char*, int);
+void create_node(char, char*, int);	//nodetype,name,value
 %}
 
 %%
@@ -55,23 +55,23 @@ void func(int, char, char*, int);
 			}
 							
 "if"			{
-				makeNode(2,'?',NULL,-1);
+				create_node('?',NULL,-1);
 				return IF;
 			}	
 						
 "ireturn"		{
-				makeNode(2,'I',checkingNULL,-1);
+				create_node('I',NULL,-1);
 				return IRETURN;
 			}
 
 "load"			{
-				makeNode(2,'L',NULL,-1);
+				create_node('L',NULL,-1);
 				return LOAD;
 			}
 			
 
 "store"			{
-				makeNode(2,'S',NULL,-1);
+				create_node('S',NULL,-1);
 				return STORE;
 			}
 				
@@ -80,101 +80,96 @@ void func(int, char, char*, int);
 			}
 
 "while"			{
-				makeNode(2,'w',NULL,-1);
+				create_node('w',NULL,-1);
 				return WHILE;
 			}
 			
 
 [R]([1][0-5]|[0-9])  	{
-				makeNode(0,'R',NULL,atoi(yytext+1));
+				create_node('R',NULL,atoi(yytext+1));
 				return REG;
 			}
 				
 "BP"			{
-				makeNode(0,'R',NULL,20);
+				create_node('R',NULL,20);
 				return REG;
 			}
 
 "SP"			{
-				makeNode(0,'R',NULL,21);
+				create_node('R',NULL,21);
 				return REG;
 			}
 
 "IP"			{
-				makeNode(0,'R',NULL,22);
+				create_node('R',NULL,22);
 				return REG;
 			}
 						
-[0-9]+			{
-				makeNode(0,'c',NULL,atoi(yytext));
+[-]?[0-9]+		{
+				create_node('c',NULL,atoi(yytext));
 				return NUM;
 			}
 
 (=)			{
-				makeNode(2,'=',NULL,-1);
+				create_node('=',NULL,-1);
 				return ASSIGNOP;
 			}
 			
 [-+]			{
-				makeNode(0,*yytext,NULL,-1);
+				create_node(*yytext,NULL,-1);
 				return ARITHOP1;			
 			}
 			
 [*/%]			{
-				makeNode(0,*yytext,NULL,-1);
+				create_node(*yytext,NULL,-1);
 				return ARITHOP2;			
 			}
 			
 [<>]			{
-				makeNode(1,*yytext,NULL,-1);
+				create_node(*yytext,NULL,-1);
 				return RELOP;
 			}
 			
 (==)			{
-				makeNode(1,'e',NULL,-1);
+				create_node('e',NULL,-1);
 				return RELOP;
 			}
 			
 (<=)			{
-				makeNode(1,'l',NULL,-1);
+				create_node('l',NULL,-1);
 				return RELOP;
 			}
 			
 (>=)			{
-				makeNode(1,'g',NULL,-1);
+				create_node('g',NULL,-1);
 				return RELOP;
 			}
 			
 (!=)			{
-				makeNode(1,'!',NULL,-1);
+				create_node('!',NULL,-1);
 				return RELOP;
 			}
 			
 "&&"			{
-				makeNode(1,'a',NULL,-1);
+				create_node('a',NULL,-1);
 				return LOGOP;
 			}
 
 "||"			{
-				makeNode(1,'o',NULL,-1);
+				create_node('o',NULL,-1);
 				return LOGOP;
 			}
 			
 "!"			{
-				makeNode(1,'x',NULL,-1);
+				create_node('x',NULL,-1);
 				return NOTOP;
 			}
 		
 [a-zA-Z][a-zA-Z0-9]*	{
-				makeNode(-1,'i',yytext,-1);
+				create_node('i',yytext,-1);
 				return ID;
 			}	
-						
-[\"].*[\"]		{
-				makeNode(3,'s',yytext,-1);
-				return STRING;
-			}
-			
+
 [(),;\[\]\{\}&]		{	
 				return *yytext;
 			}
@@ -194,18 +189,15 @@ void func(int, char, char*, int);
 			}
 
 %%
-void makeNode(int type,char nodetype, char *name, int value)
+void create_node(char nodetype, char *name, int value)
 {
-	/*yylval.n=malloc(sizeof(struct tree));
-	yylval.n->type=type;
+	yylval.n=malloc(sizeof(struct tree));
 	yylval.n->nodetype=nodetype;
 	if(name!=NULL)
 		yylval.n->name=strdup(name);
 	yylval.n->value=value;
-	yylval.n->Gentry=NULL;
-	yylval.n->Lentry=NULL;
+	yylval.n->entry=NULL;
 	yylval.n->ptr1=NULL;
 	yylval.n->ptr2=NULL;
-	yylval.n->ptr3=NULL;*/
-
+	yylval.n->ptr3=NULL;
 }
