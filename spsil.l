@@ -85,83 +85,8 @@ void func(int, char, char*, int);
 			}
 			
 
-"R0"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R1"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R2"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R3"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R4"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R5"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R6"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R7"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R8"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-					
-"R9"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R10"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R11"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R12"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R13"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R14"			{
-				makeNode(0,'R',NULL,1);
-				return REG;
-			}
-						
-"R15"			{
-				makeNode(0,'R',NULL,1);
+[R]([0-9]|[1][0-5])
+				makeNode(0,'R',NULL,atoi(yytext+1));
 				return REG;
 			}
 				
