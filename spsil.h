@@ -145,8 +145,7 @@ struct tree * create_nonterm_node(char *name,struct tree *a,struct tree *b)
 	return temp;
 }
 struct tree * create_tree(struct tree *a,struct tree *b,struct tree *c,struct tree *d)
-{
-	printf("hai");
+{	
 	a->ptr1=b;
 	a->ptr2=c;
 	a->ptr3=d;	

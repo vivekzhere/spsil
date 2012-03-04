@@ -190,7 +190,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 
 %%
 void create_node(char nodetype, char *name, int value)
-{
+{	
 	yylval.n=malloc(sizeof(struct tree));
 	yylval.n->nodetype=nodetype;
 	if(name!=NULL)
