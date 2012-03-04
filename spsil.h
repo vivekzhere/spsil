@@ -56,7 +56,7 @@ void insert_constant(char *name,int value)
 	if(temp==NULL)
 	{
 		temp=malloc(sizeof(struct define));
-		strcpy(temp->name,name);
+		temp->name=name;
 		temp->value=value;
 		temp->next=define_root;
 		define_root=temp;
