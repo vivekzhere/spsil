@@ -13,63 +13,86 @@
 %left RELOP  
 %left ARITHOP1		// + and -
 %left ARITHOP2		// * , / and %
-%right NEGOP
+%right NOTOP		// NOT Operator
 %left UMIN		// unary minus
 %%
-body:		definelist stmtlist			{}
-			;
+body:		definelist stmtlist			{
+							}
+		;
 			
-definelist:								{}
+definelist:						{
+							}
+		|definelist definestmt			{
+							}
+		;
 
-			|definelist definestmt		{}
-			;
+definestmt:	DEFINE STRING NUM ';'			{
+							}
+		;
 
-definestmt:	DEFINE STRING NUM ';'		{}
-			;
+stmtlist:	stmtlist stmt 				{
+								$$=NULL;
+							}
+		|stmt					{
+								$$=NULL;
+							}
+		;
 
-stmtlist:	stmtlist stmt 				{$$=NULL;
-										}
-			|stmt						{$$=NULL;
-										}
-			;
-
-stmt:		ids ASSIGNOP expr ';'	 		{$$=NULL;
-										}
-			|PRINT '(' expr ')' ';'		{$$=NULL;
-										}			
-			|IF expr THEN stmtlist ENDIF ';'					{$$=NULL;
-																}
-			|IF expr THEN stmtlist ELSE stmtlist ENDIF ';'		{$$=NULL;
-																}
-			|WHILE expr DO stmtlist ENDWHILE ';'				{$$=NULL;
-																}
-			|ALIAS REG ID ';'									{$$=NULL;
-																}
+stmt:		ids ASSIGNOP expr ';'	 		{
+								$$=NULL;
+							}
+		|PRINT '(' expr ')' ';'			{
+								$$=NULL;
+							}			
+		|IF expr THEN stmtlist ENDIF ';'		{
+								$$=NULL;
+							}								
+		|IF expr THEN stmtlist
+		ELSE stmtlist ENDIF ';'			{	
+								$$=NULL;
+							}
+		|WHILE expr DO stmtlist ENDWHILE ';'	{
+								$$=NULL;
+							}
+		|ALIAS REG ID ';'			{
+								$$=NULL;
+							}
 			;
 				
-expr:		expr ARITHOP1 expr				{$$=NULL;
-										}
-			|expr ARITHOP2 expr			{$$=NULL;
-										}
-			|expr RELOP expr 			{$$=NULL;
-										}
-			|expr LOGOP expr			{$$=NULL;
-										}
-			|NOTOP expr					{$$=NULL;
-										}
-			|'('expr')'					{$$=$2;
-										}
-			|ARITHOP1 expr	%prec UMIN		{$$=NULL;
-										}
-			|NUM						{$$=$1;
-										}
-			|ids						{$$=$1;
-										}
-			;
-			
-ids:	ID					{$$=NULL;
+expr:		expr ARITHOP1 expr			{
+								$$=NULL;
 							}
-		|REG				{$$=NULL;
+		|expr ARITHOP2 expr			{
+								$$=NULL;
+							}
+		|expr RELOP expr 			{
+								$$=NULL;
+							}
+		|expr LOGOP expr			{
+								$$=NULL;
+							}
+		|NOTOP expr				{
+								$$=NULL;
+							}
+		|'('expr')'				{
+								$$=$2;
+							}
+		|ARITHOP1 expr	%prec UMIN		{
+								$$=NULL;
+							}
+		|NUM					{
+								$$=$1;
+							}
+		|ids					{
+								$$=$1;
+							}
+		;
+			
+ids:		ID					{
+								$$=NULL;
+							}
+		|REG					{
+								$$=NULL;
 							}
 		;
 %%
