@@ -60,7 +60,7 @@ void func(int, char, char*, int);
 			}	
 						
 "ireturn"		{
-				makeNode(2,'I',NULL,-1);
+				makeNode(2,'I',checkingNULL,-1);
 				return IRETURN;
 			}
 
@@ -91,17 +91,17 @@ void func(int, char, char*, int);
 			}
 				
 "BP"			{
-				makeNode(0,'R',NULL,1);
+				makeNode(0,'R',NULL,20);
 				return REG;
 			}
 
 "SP"			{
-				makeNode(0,'R',NULL,1);
+				makeNode(0,'R',NULL,21);
 				return REG;
 			}
 
 "IP"			{
-				makeNode(0,'R',NULL,1);
+				makeNode(0,'R',NULL,22);
 				return REG;
 			}
 						
