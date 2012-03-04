@@ -62,6 +62,12 @@ stmt:		ids ASSIGNOP expr ';'	 		{
 								insert_alias($2->name,$3->value);
 								$$=NULL;
 							}
+		|LOAD '(' expr ',' expr ')'		{
+								$$=create_tree($1,$3,$5,NULL);
+							}
+		|STORE '(' expr ',' expr ')'		{
+								$$=create_tree($1,$3,$5,NULL);
+							}
 		;
 				
 expr:		expr ARITHOP1 expr			{
@@ -103,7 +109,7 @@ whilepad:	WHILE					{
 		;
 			
 ids:		ID					{							
-								$$=$1;//substitute_id($1);
+								$$=substitute_id($1);
 							}
 		|REG					{
 								$$=$1;
@@ -112,7 +118,7 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	//fp=fopen("./sim/sim.asm","w");
+	//fp=fopen("sim.asm","w");
 	//fprintf(fp,"START\n");	
 	return yyparse();
 }
