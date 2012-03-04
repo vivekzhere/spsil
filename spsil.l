@@ -55,23 +55,23 @@ void func(int, char, char*, int);
 			}
 							
 "if"			{
-				func(2,'?',NULL,-1);
+				makeNode(2,'?',NULL,-1);
 				return IF;
 			}	
 						
 "ireturn"		{
-				func(2,'I',NULL,-1);
+				makeNode(2,'I',NULL,-1);
 				return IRETURN;
 			}
 
 "load"			{
-				func(2,'L',NULL,-1);
+				makeNode(2,'L',NULL,-1);
 				return LOAD;
 			}
 			
 
 "store"			{
-				func(2,'S',NULL,-1);
+				makeNode(2,'S',NULL,-1);
 				return STORE;
 			}
 				
@@ -80,173 +80,173 @@ void func(int, char, char*, int);
 			}
 
 "while"			{
-				func(2,'w',NULL,-1);
+				makeNode(2,'w',NULL,-1);
 				return WHILE;
 			}
 			
 
 "R0"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R1"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R2"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R3"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R4"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R5"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R6"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R7"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R8"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 					
 "R9"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R10"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R11"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R12"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R13"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R14"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 "R15"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 				
 "BP"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 
 "SP"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 
 "IP"			{
-				func(0,'R',NULL,1);
+				makeNode(0,'R',NULL,1);
 				return REG;
 			}
 						
 [0-9]+			{
-				func(0,'c',NULL,atoi(yytext));
+				makeNode(0,'c',NULL,atoi(yytext));
 				return NUM;
 			}
 
 (=)			{
-				func(2,'=',NULL,-1);
+				makeNode(2,'=',NULL,-1);
 				return ASSIGNOP;
 			}
 			
 [-+]			{
-				func(0,*yytext,NULL,-1);
+				makeNode(0,*yytext,NULL,-1);
 				return ARITHOP1;			
 			}
 			
 [*/%]			{
-				func(0,*yytext,NULL,-1);
+				makeNode(0,*yytext,NULL,-1);
 				return ARITHOP2;			
 			}
 			
 [<>]			{
-				func(1,*yytext,NULL,-1);
+				makeNode(1,*yytext,NULL,-1);
 				return RELOP;
 			}
 			
 (==)			{
-				func(1,'e',NULL,-1);
+				makeNode(1,'e',NULL,-1);
 				return RELOP;
 			}
 			
 (<=)			{
-				func(1,'l',NULL,-1);
+				makeNode(1,'l',NULL,-1);
 				return RELOP;
 			}
 			
 (>=)			{
-				func(1,'g',NULL,-1);
+				makeNode(1,'g',NULL,-1);
 				return RELOP;
 			}
 			
 (!=)			{
-				func(1,'!',NULL,-1);
+				makeNode(1,'!',NULL,-1);
 				return RELOP;
 			}
 			
 "&&"			{
-				func(1,'a',NULL,-1);
+				makeNode(1,'a',NULL,-1);
 				return LOGOP;
 			}
 
 "||"			{
-				func(1,'o',NULL,-1);
+				makeNode(1,'o',NULL,-1);
 				return LOGOP;
 			}
 			
 "!"			{
-				func(1,'x',NULL,-1);
+				makeNode(1,'x',NULL,-1);
 				return NOTOP;
 			}
 		
 [a-zA-Z][a-zA-Z0-9]*	{
-				func(-1,'i',yytext,-1);
+				makeNode(-1,'i',yytext,-1);
 				return ID;
 			}	
 						
 [\"].*[\"]		{
-				func(3,'s',yytext,-1);
+				makeNode(3,'s',yytext,-1);
 				return STRING;
 			}
 			
@@ -269,7 +269,7 @@ void func(int, char, char*, int);
 			}
 
 %%
-void func(int type,char nodetype, char *name, int value)
+void makeNode(int type,char nodetype, char *name, int value)
 {
 	/*yylval.n=malloc(sizeof(struct tree));
 	yylval.n->type=type;
