@@ -85,7 +85,7 @@ void func(int, char, char*, int);
 			}
 			
 
-[R]([0-9]|[1][0-5])
+[R]([1][0-5]|[0-9])  	{
 				makeNode(0,'R',NULL,atoi(yytext+1));
 				return REG;
 			}
