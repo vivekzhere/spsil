@@ -629,57 +629,134 @@ void codegen(struct tree * root)
 				}
 			}			
 			break;
-/*		case '=':			
-			if(root->ptr1->entry!=NULL)
-				fprintf(fp,"MOV R%d,%d\n",regcount,root->ptr1->entry->bind);
-			else
+		case '=':
+			switch(root->value)
 			{
-				fprintf(fp,"MOV R%d,%d\n",regcount,root->ptr1->entry->bind);
-				fprintf(fp,"MOV R%d,BP\n",regcount+1);
-				fprintf(fp,"ADD R%d,R%d\n",regcount,regcount+1);
-			}			
-			regcount++;
-			if(root->ptr1->ptr1!=NULL)
-			{
-				codegen(root->ptr1->ptr1);
-				fprintf(fp,"ADD R%d,R%d\n",regcount-2,regcount-1);
-				regcount--;
+				case 0:			//reg=y
+					getreg(root->ptr1,reg1);
+					if(root->ptr2->nodetype=='R')		//reg=reg
+					{
+						getreg(root->ptr2,reg2);
+						fprintf(fp,"MOV %s,%s\n",reg1,reg2);	
+					}
+					else if(root->ptr2->nodetype=='c')	//reg=no
+					{
+						fprintf(fp,"MOV %s,%d\n",reg1,root->ptr2->value);
+					}
+					else					//reg=expr
+					{
+						codegen(root->ptr2);
+						fprintf(fp,"MOV %s,T%d\n",reg1,regcount-1);
+						regcount--;
+					}
+					break;
+				case 1:			//reg=[y]
+					getreg(root->ptr1,reg1);
+					if(root->ptr2->nodetype=='R')		//reg=[reg]
+					{
+						getreg(root->ptr2,reg2);
+						fprintf(fp,"MOV %s,[%s]\n",reg1,reg2);	
+					}
+					else if(root->ptr2->nodetype=='c')	//reg=[no]
+					{
+						fprintf(fp,"MOV %s,[%d]\n",reg1,root->ptr2->value);
+					}
+					else					//reg=[expr]
+					{
+						codegen(root->ptr2);
+						fprintf(fp,"MOV %s,[T%d]\n",reg1,regcount-1);
+						regcount--;
+					}
+					break;
+				case 2:			//[expr/no]=y
+					if(root->ptr1->nodetype=='c')	//[no]=y
+					{
+						if(root->ptr2->nodetype=='R')		//[no]=reg
+						{
+							getreg(root->ptr2,reg2);
+							fprintf(fp,"MOV [%d],%s\n",root->ptr1->value,reg2);	
+						}
+						else if(root->ptr2->nodetype=='c')	//[no]=no
+						{
+							fprintf(fp,"MOV [%d],%d\n",root->ptr1->value,root->ptr2->value);
+						}
+						else					//[no]=expr
+						{
+							codegen(root->ptr2);
+							fprintf(fp,"MOV [%d],T%d\n",root->ptr1->value,regcount-1);
+							regcount--;
+						}
+					}
+					else				//[expr]=y
+					{
+						codegen(root->ptr1);
+						if(root->ptr2->nodetype=='R')		//[expr]=reg
+						{
+							getreg(root->ptr2,reg2);
+							fprintf(fp,"MOV [T%d],%s\n",regcount-1,reg2);	
+						}
+						else if(root->ptr2->nodetype=='c')	//[expr]=no
+						{
+							fprintf(fp,"MOV [T%d],%d\n",regcount-1,root->ptr2->value);
+						}
+						else					//[expr]=expr
+						{
+							codegen(root->ptr2);
+							fprintf(fp,"MOV [T%d],T%d\n",regcount-2,regcount-1);
+							regcount--;
+						}
+						regcount--;
+					}
+					break;
+				case 3:			//[x]=[y]
+					if(root->ptr1->nodetype=='c')	//[no]=[y]
+					{
+						if(root->ptr2->nodetype=='R')		//[no]=[reg]
+						{
+							getreg(root->ptr2,reg2);
+							fprintf(fp,"MOV [%d],[%s]\n",root->ptr1->value,reg2);	
+						}
+						else if(root->ptr2->nodetype=='c')	//[no]=[no]
+						{
+							fprintf(fp,"MOV [%d],[%d]\n",root->ptr1->value,root->ptr2->value);
+						}
+						else					//[no]=[expr]
+						{
+							codegen(root->ptr2);
+							fprintf(fp,"MOV [%d],[T%d]\n",root->ptr1->value,regcount-1);
+							regcount--;
+						}
+					}
+					else				//[expr]=[y]
+					{
+						codegen(root->ptr1);
+						if(root->ptr2->nodetype=='R')		//[expr]=[reg]
+						{
+							getreg(root->ptr2,reg2);
+							fprintf(fp,"MOV [T%d],[%s]\n",regcount-1,reg2);	
+						}
+						else if(root->ptr2->nodetype=='c')	//[expr]=[no]
+						{
+							fprintf(fp,"MOV [T%d],[%d]\n",regcount-1,root->ptr2->value);
+						}
+						else					//[expr]=[expr]
+						{
+							codegen(root->ptr2);
+							fprintf(fp,"MOV [T%d],[T%d]\n",regcount-2,regcount-1);
+							regcount--;
+						}
+						regcount--;
+					}
+					break;
+				default:
+					break;
 			}
-			codegen(root->ptr2);
-			if((root->ptr1->entry==NULL)?root->ptr1->entry->type:root->ptr1->entry->type==3)
-				fprintf(fp,"STRCPY R%d,R%d\n",regcount-2,regcount-1);
-			else
-				fprintf(fp,"MOV [R%d],R%d\n",regcount-2,regcount-1);
-			regcount=regcount-2;
-			break;		
+			break;
 		case 'c':	//constants
-			fprintf(fp,"MOV R%d,%d\n",regcount,root->value);
+			fprintf(fp,"MOV T%d,%d\n",regcount,root->value);
 			regcount++;
 			break;
-		case 's':	//string constants
-			fprintf(fp,"MOV R%d,%d\n",regcount,root->value);
-			regcount++;
-			break;
-		case 'i':			//variables and array variables
-			if(root->entry!=NULL)
-				fprintf(fp,"MOV R%d,%d\n",regcount,root->entry->bind);
-			else
-			{
-				fprintf(fp,"MOV R%d,%d\n",regcount,root->entry->bind);
-				fprintf(fp,"MOV R%d,BP\n",regcount+1);
-				fprintf(fp,"ADD R%d,R%d\n",regcount,regcount+1);
-			}
-			regcount++;
-			if(root->ptr1!=NULL)
-			{
-				codegen(root->ptr1);
-				fprintf(fp,"ADD R%d,R%d\n",regcount-2,regcount-1);
-				regcount--;
-			}
-			if(root->type!=3)			
-				fprintf(fp,"MOV R%d,[R%d]\n",regcount-1,regcount-1);
-			break;
-		case '?':	//IF statement , IF-ELSE statements
+/*		case '?':	//IF statement , IF-ELSE statements
 			push();
 			codegen(root->ptr1);
 			fprintf(fp,"JZ R%d,la%d\n",regcount-1,top->i);

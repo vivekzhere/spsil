@@ -11,12 +11,12 @@ struct tree
 {
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
-					S-store,		w-while,	p-write
+					S-store,		w-while,
 					R-register  //value=0-15,20-SP,21-BP,22-IP
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
 					a-AND		o-OR		x-NOT
-					c-number,	i-identifier,	s-string
+					c-number,	i-identifier,
 					n-nonterminal
 						*/
 	char *name;

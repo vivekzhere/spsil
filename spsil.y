@@ -43,8 +43,31 @@ stmtlist:	stmtlist stmt 				{
 							}
 		;
 
-stmt:		ids ASSIGNOP expr ';'	 		{
+stmt:		ids ASSIGNOP expr ';'	 		{	
+								if($1->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in assignment!!\n",linecount);
+									exit(0);
+								}
+								$2->value=0;
 								$$=create_tree($2,$1,$3,NULL);
+							}
+		|ids ASSIGNOP '['expr']' ';' 		{
+								if($1->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in assignment!!\n",linecount);
+									exit(0);
+								}
+								$2->value=1;
+								$$=create_tree($2,$1,$4,NULL);
+							}
+		|'['expr']' ASSIGNOP expr ';'	 	{
+								$2->value=2;
+								$$=create_tree($4,$2,$5,NULL);
+							}
+		|'['expr']' ASSIGNOP '['expr']' ';'	{
+								$2->value=3;
+								$$=create_tree($4,$2,$6,NULL);
 							}
 		|ifpad expr THEN stmtlist ENDIF ';'	{								
 								$$=create_tree($1,$2,$4,NULL);
