@@ -894,6 +894,17 @@ void codegen(struct tree * root)
 				regcount--;
 			}			
 			break;
+		case 'P':
+			getreg(root->ptr1,reg1);
+			getreg(root->ptr2,reg2);
+			fprintf(fp,"MOV T%d,%s\nSTRCMP T%d,%s\n",regcount,reg1,regcount,reg2);
+			regcount++;		
+			break;
+		case 'Y':
+			getreg(root->ptr1,reg1);
+			getreg(root->ptr2,reg2);
+			fprintf(fp,"MOV T%d,%s\nSTRCPY T%d,%s\n",regcount,reg1,regcount,reg2);		
+			break;
 		case 'I':
 			fprintf(fp,"IRET\n");
 			break;	

@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID
-%type<n> IF IRETURN LOAD STORE WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID
+%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -43,7 +43,15 @@ stmtlist:	stmtlist stmt 				{
 							}
 		;
 
-stmt:		ids ASSIGNOP expr ';'	 		{	
+stmt:		STRCPY '(' ids ',' ids ')' ';'		{	
+								if($3->nodetype!='R' || $5->nodetype!='R')
+								{
+									printf("\n%d:Invalid operands in strcpy!!\n",linecount);
+									exit(0);
+								}								
+								$$=create_tree($1,$3,$5,NULL);
+							}
+		|ids ASSIGNOP expr ';'	 		{	
 								if($1->nodetype!='R')
 								{
 									printf("\n%d:Invalid operand in assignment!!\n",linecount);
@@ -111,6 +119,14 @@ expr:		expr ARITHOP1 expr			{
 							}
 		|'('expr')'				{
 								$$=$2;
+							}
+		|STRCMP '(' ids ',' ids ')' ';'		{	
+								if($3->nodetype!='R' || $5->nodetype!='R')
+								{
+									printf("\n%d:Invalid operands in strcmp!!\n",linecount);
+									exit(0);
+								}								
+								$$=create_tree($1,$3,$5,NULL);
 							}
 		|NUM					{	
 								$$=$1;

@@ -11,7 +11,7 @@ struct tree
 {
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
-					S-store,		w-while,
+					S-store,	P-strcmp,	Y-strcpy,	w-while,
 					R-register  //value=0-15,20-SP,21-BP,22-IP
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
@@ -73,6 +73,16 @@ void create_node(char, char*, int);	//nodetype,name,value
 "store"			{
 				create_node('S',NULL,-1);
 				return STORE;
+			}
+
+"strcmp"		{
+				create_node('P',NULL,-1);
+				return STRCMP;
+			}
+
+"strcpy"		{
+				create_node('Y',NULL,-1);
+				return STRCPY;
 			}
 				
 "then"			{
