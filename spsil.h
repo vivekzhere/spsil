@@ -24,13 +24,40 @@ struct tree
 	struct define *entry;
 	struct tree *ptr1,*ptr2,*ptr3;
 };
-struct define *define_root=NULL;
+struct define *root_define=NULL;
 FILE *fp;
 char alias_table[8][30];
 
+int labelcount=0;
+struct label
+{
+	int i;
+	struct label *next; 
+};
+struct label *root_label=NULL;
+void push_label()
+{
+	struct label *temp;
+	temp=malloc(sizeof(struct label));
+	temp->i=labelcount;
+	temp->next=root_label;
+	root_label=temp; 
+	labelcount++;
+}
+int pop_label()
+{
+	int i;
+	struct label *temp;
+	temp=root_label;
+	root_label=root_label->next;
+	i=temp->i;
+	free(temp);
+	return i;
+}
+
 struct define* lookup_constant(char *name)
 {
-	struct define *temp=define_root;	
+	struct define *temp=root_define;	
 	while(temp!=NULL)
 	{
 		if(strcmp(name,temp->name)==0)
@@ -59,8 +86,8 @@ void insert_constant(char *name,int value)
 		temp=malloc(sizeof(struct define));
 		temp->name=name;
 		temp->value=value;
-		temp->next=define_root;
-		define_root=temp;
+		temp->next=root_define;
+		root_define=temp;
 	}
 	else
 	{
@@ -749,6 +776,7 @@ void codegen(struct tree * root)
 					}
 					break;
 				default:
+					printf("Invalid value in assignment %d.\n",root->value);	//debugging
 					break;
 			}
 			break;
@@ -756,35 +784,122 @@ void codegen(struct tree * root)
 			fprintf(fp,"MOV T%d,%d\n",regcount,root->value);
 			regcount++;
 			break;
-/*		case '?':	//IF statement , IF-ELSE statements
-			push();
-			codegen(root->ptr1);
-			fprintf(fp,"JZ R%d,la%d\n",regcount-1,top->i);
-			regcount--;
+		case '?':	//IF statement , IF-ELSE statements
+			push_label();			
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1,reg1);
+				fprintf(fp,"JZ %s,la%d\n",reg1,root_label->i);
+			}
+			else
+			{				
+				codegen(root->ptr1);
+				fprintf(fp,"JZ T%d,la%d\n",regcount-1,root_label->i);
+				regcount--;
+			}			
 			codegen(root->ptr2);
-			fprintf(fp,"JMP lb%d\n",top->i);
-			fprintf(fp,"la%d:\n",top->i);
+			fprintf(fp,"JMP lb%d\n",root_label->i);
+			fprintf(fp,"la%d:\n",root_label->i);
 			codegen(root->ptr3);
-			fprintf(fp,"lb%d:\n",pop());
+			fprintf(fp,"lb%d:\n",pop_label());
 			break;
 		case 'w':	//WHILE loop
-			push();
-			fprintf(fp,"la%d:\n",top->i);
-			codegen(root->ptr1);
-			fprintf(fp,"JZ R%d,lb%d\n",regcount-1,top->i);
-			regcount--;
+			push_label();
+			fprintf(fp,"la%d:\n",root_label->i);
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1,reg1);
+				fprintf(fp,"JZ %s,lb%d\n",reg1,root_label->i);
+			}
+			else
+			{				
+				codegen(root->ptr1);
+				fprintf(fp,"JZ T%d,lb%d\n",regcount-1,root_label->i);
+				regcount--;
+			}			
 			codegen(root->ptr2);
-			fprintf(fp,"JMP la%d\n",top->i);
-			fprintf(fp,"lb%d:\n",pop());
-			break;		
+			fprintf(fp,"JMP la%d\n",root_label->i);
+			fprintf(fp,"lb%d:\n",pop_label());
+			break;
+		case 'L':
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1,reg1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"LOAD %s,%s\n",reg1,reg2);						
+				}
+				else if(root->ptr2->nodetype=='c')
+					fprintf(fp,"LOAD %s,%d\n",reg1,root->ptr2->value);
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"LOAD %s,T%d\n",reg1,regcount-1);
+					regcount--;
+				}					
+			}
+			else
+			{
+				codegen(root->ptr1);			
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"LOAD T%d,%s\n",regcount-1,reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')
+					fprintf(fp,"LOAD T%d,%d\n",regcount-1,root->ptr2->value);
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"LOAD T%d,T%d\n",regcount-2,regcount-1);
+					regcount--;
+				}
+				regcount--;
+			}			
+			break;
+		case 'S':
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1,reg1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"STORE %s,%s\n",reg1,reg2);						
+				}
+				else if(root->ptr2->nodetype=='c')
+					fprintf(fp,"STORE %s,%d\n",reg1,root->ptr2->value);
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"STORE %s,T%d\n",reg1,regcount-1);
+					regcount--;
+				}					
+			}
+			else
+			{
+				codegen(root->ptr1);			
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"STORE %s,T%d\n",reg2,regcount-1);	
+				}
+				else if(root->ptr2->nodetype=='c')
+					fprintf(fp,"STORE %d,T%d\n",root->ptr2->value,regcount-1);
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"STORE T%d,T%d\n",regcount-1,regcount-2);
+					regcount--;
+				}
+				regcount--;
+			}			
+			break;
+		case 'I':
+			fprintf(fp,"IRET\n");
+			break;	
 		default:
-			return;*/
-		default:
-			codegen(root->ptr1);
-			codegen(root->ptr2);
+			printf("Unknown nodetype %c\n",root->nodetype);		//Debugging
+			return;
 	}
 }
-
-
-
-
