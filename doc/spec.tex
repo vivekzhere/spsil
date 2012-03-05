@@ -171,7 +171,7 @@ Standard  meanings apply to these operators. A relational operator will take in 
 \subsection{String Comparison}
 The only operation that can be performed on strings stored in memory is string camparison. \textbf{strcmp} is used to compare two strings whose address is stored in the registers that are given as operands. \\
 
- e.g. \textit{strcmp(R9,R10);}
+ e.g. \textit{strcmp(R9,R10)}
 
 
 %----------------------Addressing---------------------------%
@@ -196,14 +196,17 @@ Define statement is used to define a symbolic name for a value. Define statement
 \subsection{Alias Statement}
 An \textbf{alias} statement is used to  associate a kernel register (R8 to R15) with a name. \textbf{Alias} statements can be used anywhere in the program except within \textbf{if} and \textbf{while} statements.\\
 
-\indent \textit{ \textbf{alias}  alias\_name register\_name } \\
+\indent \textit{ \textbf{alias}  alias\_name register\_name ;} \\
 
 
 \subsection{Assignment Statement}
 The SPSIL assignment statement assigns the value of an  expression or value stored in a memory address to a register or a memory address. \textbf{=} is the assignment operator used in SPSIL. The operand on the right hand side of the operator is assigned to the left hand side. The general syntax is as follows \\
 
-\indent \textit{ Register / [Address] = Expression / [Address] }
+\indent \textit{ Register / [Address] = Expression / [Address] ;}
 
+\subsection{strcpy Statement}
+The SPSIL \textbf{strcpy} statement copies a string in one memory location to another memory location. Registers which store the  memory locaiton of the destination and the source are given as R{\tiny d} and R{\tiny s} respectively.\\
+\indent \textit{ \textbf{strcpy}(R{\tiny d}, R{\tiny s});}
 
 \subsection{If Statement}
 \textbf{If} statements specify the conditional execution of two branches according to the value of a logical expression. If the expression evaluates to 1, the \textbf{if} branch is executed, otherwise the \textbf{else}  branch is executed. The \textbf{else} part is optional. The general syntax is as follows  \\

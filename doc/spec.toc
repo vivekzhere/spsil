@@ -20,7 +20,8 @@
 \contentsline {subsection}{\numberline {7.1}Define Statement}{6}{subsection.7.1}
 \contentsline {subsection}{\numberline {7.2}Alias Statement}{6}{subsection.7.2}
 \contentsline {subsection}{\numberline {7.3}Assignment Statement}{7}{subsection.7.3}
-\contentsline {subsection}{\numberline {7.4}If Statement}{7}{subsection.7.4}
-\contentsline {subsection}{\numberline {7.5}While Statement}{7}{subsection.7.5}
-\contentsline {subsection}{\numberline {7.6}ireturn Statement}{7}{subsection.7.6}
-\contentsline {subsection}{\numberline {7.7}Load / Store Statements}{8}{subsection.7.7}
+\contentsline {subsection}{\numberline {7.4}strcpy Statement}{7}{subsection.7.4}
+\contentsline {subsection}{\numberline {7.5}If Statement}{7}{subsection.7.5}
+\contentsline {subsection}{\numberline {7.6}While Statement}{7}{subsection.7.6}
+\contentsline {subsection}{\numberline {7.7}ireturn Statement}{8}{subsection.7.7}
+\contentsline {subsection}{\numberline {7.8}Load / Store Statements}{8}{subsection.7.8}
