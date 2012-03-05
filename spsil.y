@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID
-%type<n> IF IRETURN LOAD STORE WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID
+%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -16,6 +16,7 @@
 %right NOTOP		// NOT Operator
 %%
 body:		definelistpad stmtlist			{
+								codegen($2);
 							}
 		;
 
@@ -42,8 +43,39 @@ stmtlist:	stmtlist stmt 				{
 							}
 		;
 
-stmt:		ids ASSIGNOP expr ';'	 		{
+stmt:		STRCPY '(' ids ',' ids ')' ';'		{	
+								if($3->nodetype!='R' || $5->nodetype!='R')
+								{
+									printf("\n%d:Invalid operands in strcpy!!\n",linecount);
+									exit(0);
+								}								
+								$$=create_tree($1,$3,$5,NULL);
+							}
+		|ids ASSIGNOP expr ';'	 		{	
+								if($1->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in assignment!!\n",linecount);
+									exit(0);
+								}
+								$2->value=0;
 								$$=create_tree($2,$1,$3,NULL);
+							}
+		|ids ASSIGNOP '['expr']' ';' 		{
+								if($1->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in assignment!!\n",linecount);
+									exit(0);
+								}
+								$2->value=1;
+								$$=create_tree($2,$1,$4,NULL);
+							}
+		|'['expr']' ASSIGNOP expr ';'	 	{
+								$2->value=2;
+								$$=create_tree($4,$2,$5,NULL);
+							}
+		|'['expr']' ASSIGNOP '['expr']' ';'	{
+								$2->value=3;
+								$$=create_tree($4,$2,$6,NULL);
 							}
 		|ifpad expr THEN stmtlist ENDIF ';'	{								
 								$$=create_tree($1,$2,$4,NULL);
@@ -88,6 +120,14 @@ expr:		expr ARITHOP1 expr			{
 		|'('expr')'				{
 								$$=$2;
 							}
+		|STRCMP '(' ids ',' ids ')' ';'		{	
+								if($3->nodetype!='R' || $5->nodetype!='R')
+								{
+									printf("\n%d:Invalid operands in strcmp!!\n",linecount);
+									exit(0);
+								}								
+								$$=create_tree($1,$3,$5,NULL);
+							}
 		|NUM					{	
 								$$=$1;
 							}
@@ -118,8 +158,7 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	//fp=fopen("sim.asm","w");
-	//fprintf(fp,"START\n");	
+	fp=fopen("sim.asm","w");
 	return yyparse();
 }
 
