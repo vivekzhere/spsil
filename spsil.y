@@ -16,6 +16,7 @@
 %right NOTOP		// NOT Operator
 %%
 body:		definelistpad stmtlist			{
+								codegen($2);
 							}
 		;
 
@@ -118,8 +119,8 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	//fp=fopen("sim.asm","w");
-	//fprintf(fp,"START\n");	
+	fp=fopen("sim.asm","w");
+	fprintf(fp,"START\n");	
 	return yyparse();
 }
 
