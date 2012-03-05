@@ -218,7 +218,6 @@ void codegen(struct tree * root)
 	char reg1[4],reg2[4];
 	if(root==NULL)
 		return;	
-	printf("%c\n",root->nodetype);									
 	switch(root->nodetype)
 	{
 		case '<':

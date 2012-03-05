@@ -143,7 +143,6 @@ ids:		ID					{
 int main (void)
 {	
 	fp=fopen("sim.asm","w");
-	fprintf(fp,"START\n");	
 	return yyparse();
 }
 
