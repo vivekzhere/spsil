@@ -176,7 +176,7 @@ The only operation that can be performed on strings stored in memory is string c
 
 %----------------------Addressing---------------------------%
 \section{Addressing}
-Memory of the meachine can be directly accessed in an SPSIL program. A word in the memory is accessed by specifying the memory location within [ ].This  corresponds to the value stored in the given address. An arithmetic expression can be used to specify the address. An addressing element cannot be used in an expression. \\
+Memory of the meachine can be directly accessed in an SPSIL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression can be used to specify the address. An addressing element cannot be used in an expression. \\
 
 Examples of addressing: [1024], [R9], [R10+R11+128], [FAT] etc.
 
@@ -202,10 +202,10 @@ An \textbf{alias} statement is used to  associate a kernel register (R8 to R15) 
 \subsection{Assignment Statement}
 The SPSIL assignment statement assigns the value of an  expression or value stored in a memory address to a register or a memory address. \textbf{=} is the assignment operator used in SPSIL. The operand on the right hand side of the operator is assigned to the left hand side. The general syntax is as follows \\
 
-\indent \textit{ Register / [Address] = Expression / [Address] ;}
+\indent \textit{ Register / Alias / [Address] = Expression / [Address] ;}
 
 \subsection{strcpy Statement}
-The SPSIL \textbf{strcpy} statement copies a string in one memory location to another memory location. Registers which store the  memory locaiton of the destination and the source are given as R{\tiny d} and R{\tiny s} respectively.\\
+The SPSIL \textbf{strcpy} statement copies a string in one memory location to another memory location. Registers which store the  memory location of the destination and the source are given as R{\tiny d} and R{\tiny s} respectively.\\
 \indent \textit{ \textbf{strcpy}(R{\tiny d}, R{\tiny s});}
 
 \subsection{If Statement}
