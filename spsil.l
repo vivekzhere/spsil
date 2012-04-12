@@ -114,30 +114,15 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('R',NULL,22);
 				return REG;
 			}
+
+"PID"			{
+				create_node('R',NULL,23);
+				return REG;
+			}
 						
 [-]?[0-9]+		{
 				create_node('c',NULL,atoi(yytext));
 				return NUM;
-			}
-
-(=)			{
-				create_node('=',NULL,-1);
-				return ASSIGNOP;
-			}
-			
-[-+]			{
-				create_node(*yytext,NULL,-1);
-				return ARITHOP1;			
-			}
-			
-[*/%]			{
-				create_node(*yytext,NULL,-1);
-				return ARITHOP2;			
-			}
-			
-[<>]			{
-				create_node(*yytext,NULL,-1);
-				return RELOP;
 			}
 			
 (==)			{
@@ -159,6 +144,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('!',NULL,-1);
 				return RELOP;
 			}
+
 			
 "&&"			{
 				create_node('a',NULL,-1);
@@ -173,6 +159,25 @@ void create_node(char, char*, int);	//nodetype,name,value
 "!"			{
 				create_node('x',NULL,-1);
 				return NOTOP;
+			}
+[-+]			{
+				create_node(*yytext,NULL,-1);
+				return ARITHOP1;			
+			}
+			
+[*/%]			{
+				create_node(*yytext,NULL,-1);
+				return ARITHOP2;			
+			}
+			
+[<>]			{
+				create_node(*yytext,NULL,-1);
+				return RELOP;
+			}
+
+"="			{
+				create_node('=',NULL,-1);
+				return ASSIGNOP;
 			}
 		
 [a-zA-Z][a-zA-Z0-9]*	{

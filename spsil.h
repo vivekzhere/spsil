@@ -209,8 +209,10 @@ void getreg(struct tree *root,char reg[])
 		sprintf(reg,"BP");
 	else if(root->value==21)
 		sprintf(reg,"SP");
-	else
+	else if(root->value==22)
 		sprintf(reg,"IP");
+	else
+		 sprintf(reg,"PID"); 
 }
 void codegen(struct tree * root)
 {
@@ -775,7 +777,8 @@ void codegen(struct tree * root)
 					}
 					break;
 				default:
-					printf("Invalid value in assignment %d.\n",root->value);	//debugging
+					printf("Invalid value in assignment %d.\n",root->value);
+//debugging
 					break;
 			}
 			break;
@@ -907,7 +910,12 @@ void codegen(struct tree * root)
 			break;
 		case 'I':
 			fprintf(fp,"IRET\n");
-			break;	
+			break;
+		case 'R':
+			 getreg(root,reg1);
+			 fprintf(fp,"MOV T%d,%s\n",regcount,reg1);
+			 regcount++;
+			 break;
 		default:
 			printf("Unknown nodetype %c\n",root->nodetype);		//Debugging
 			return;

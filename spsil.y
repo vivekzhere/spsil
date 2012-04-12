@@ -17,6 +17,7 @@
 %%
 body:		definelistpad stmtlist			{
 								codegen($2);
+								fprintf(fp,"OVER\n");
 							}
 		;
 
@@ -70,11 +71,11 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 								$$=create_tree($2,$1,$4,NULL);
 							}
 		|'['expr']' ASSIGNOP expr ';'	 	{
-								$2->value=2;
+								$4->value=2;
 								$$=create_tree($4,$2,$5,NULL);
 							}
 		|'['expr']' ASSIGNOP '['expr']' ';'	{
-								$2->value=3;
+								$4->value=3;
 								$$=create_tree($4,$2,$6,NULL);
 							}
 		|ifpad expr THEN stmtlist ENDIF ';'	{								
@@ -94,12 +95,15 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 								insert_alias($2->name,$3->value);
 								$$=NULL;
 							}
-		|LOAD '(' expr ',' expr ')'		{
+		|LOAD '(' expr ',' expr ')' ';'		{
 								$$=create_tree($1,$3,$5,NULL);
 							}
-		|STORE '(' expr ',' expr ')'		{
+		|STORE '(' expr ',' expr ')'	';'	{
 								$$=create_tree($1,$3,$5,NULL);
 							}
+		 |IRETURN ';'								{
+								$$=$1;
+						  }
 		;
 				
 expr:		expr ARITHOP1 expr			{
@@ -158,7 +162,8 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	fp=fopen("sim.asm","w");
+	fp=fopen("code.esim","w");
+	 fprintf(fp,"START\n");
 	return yyparse();
 }
 
