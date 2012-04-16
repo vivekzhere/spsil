@@ -203,8 +203,10 @@ struct tree * substitute_id(struct tree *id)
 }
 void getreg(struct tree *root,char reg[])
 {
-	if(root->value>=0 && root->value<=15)
+	if(root->value>=0 && root->value<=7)
 		sprintf(reg,"R%d",root->value);
+	else if(root->value>=8 && root->value<=15)
+		sprintf(reg,"S%d",(root->value)-8);
 	else if(root->value==20)
 		sprintf(reg,"BP");
 	else if(root->value==21)
