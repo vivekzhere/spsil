@@ -4,4 +4,4 @@ y.tab.c
 y.tab.h
 test.sp
 sim.asm
-sp.sim
+code.esim
