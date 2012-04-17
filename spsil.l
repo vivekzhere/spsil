@@ -93,14 +93,23 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('w',NULL,-1);
 				return WHILE;
 			}
-			
 
-[R]([0-7])  	{
+"break"			{
+				create_node('b',NULL,-1);
+				return BREAK;
+			}	
+
+"continue"		{
+				create_node('t',NULL,-1);
+				return CONTINUE;
+			}			
+
+[R]([0-7])  		{
 				create_node('R',NULL,atoi(yytext+1));
 				return REG;
 			}
 			
-[S]([0-7])  	{
+[S]([0-7])  		{
 				create_node('R',NULL,atoi(yytext+1)+8);
 				return REG;
 			}

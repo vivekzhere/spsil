@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID
-%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE
+%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -90,6 +90,7 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 		|whilepad expr DO stmtlist ENDWHILE ';'	{
 								$$=create_tree($1,$2,$4,NULL);
 								flag_alias--;
+								flag_break=0;
 							}
 		|ALIAS ID REG ';'			{	
 								insert_alias($2->name,$3->value);
@@ -101,9 +102,23 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 		|STORE '(' expr ',' expr ')'	';'	{
 								$$=create_tree($1,$3,$5,NULL);
 							}
-		 |IRETURN ';'								{
+		|IRETURN ';'				{
 								$$=$1;
-						  }
+							}
+		|BREAK ';'				{if(flag_break==0)
+							{
+								printf("\n%d: break or continue should be used inside while!!\n",linecount);
+								exit(0);								
+							}
+							$$=$1;
+							}
+		|CONTINUE ';'				{if(flag_break==0)
+							{
+								printf("\n%d: break or continue should be used inside while!!\n",linecount);
+								exit(0);								
+							}
+							$$=$1;
+							}
 		;
 				
 expr:		expr ARITHOP1 expr			{
@@ -148,6 +163,7 @@ ifpad:		IF					{
 
 whilepad:	WHILE					{
 								flag_alias++;
+								flag_break=1;
 								$$=$1;
 							}
 		;

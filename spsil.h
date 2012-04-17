@@ -2,6 +2,7 @@
 #define LEGAL 0
 extern int linecount;
 int flag_alias=LEGAL;
+int flag_break=0;
 int regcount=0;
 struct define
 {
@@ -18,6 +19,7 @@ struct tree
 						g-greaterthan or equals		w-while
 						b-boolean constants
 						a-AND		o-OR		x-NOT
+						b-break		t-continue
 							*/
 	char *name;
 	int value;
@@ -809,6 +811,7 @@ void codegen(struct tree * root)
 			break;
 		case 'w':	//WHILE loop
 			push_label();
+			flag_break=root_label->i;
 			fprintf(fp,"la%d:\n",root_label->i);
 			if(root->ptr1->nodetype=='R')
 			{
@@ -824,6 +827,12 @@ void codegen(struct tree * root)
 			codegen(root->ptr2);
 			fprintf(fp,"JMP la%d\n",root_label->i);
 			fprintf(fp,"lb%d:\n",pop_label());
+			break;
+		case 'b':	//BREAK loop
+			fprintf(fp,"JMP lb%d\n",flag_break);
+			break;
+		case 't':	//CONTINUE loop
+			fprintf(fp,"JMP la%d\n",flag_break);
 			break;
 		case 'L':
 			if(root->ptr1->nodetype=='R')
