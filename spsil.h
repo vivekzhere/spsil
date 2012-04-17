@@ -36,7 +36,7 @@ struct label
 	int i;
 	struct label *next; 
 };
-struct label *root_label=NULL;
+struct label *root_label=NULL,*root_while=NULL;
 void push_label()
 {
 	struct label *temp;
@@ -56,7 +56,21 @@ int pop_label()
 	free(temp);
 	return i;
 }
-
+void push_while(int n)
+{
+	struct label *temp;
+	temp=malloc(sizeof(struct label));
+	temp->i=n;
+	temp->next=root_while;
+	root_while=temp; 
+}
+void pop_while()
+{
+	struct label *temp;
+	temp=root_while;
+	root_while=root_while->next;
+	free(temp);
+}
 struct define* lookup_constant(char *name)
 {
 	struct define *temp=root_define;	
@@ -811,7 +825,7 @@ void codegen(struct tree * root)
 			break;
 		case 'w':	//WHILE loop
 			push_label();
-			flag_break=root_label->i;
+			push_while(root_label->i);
 			fprintf(fp,"la%d:\n",root_label->i);
 			if(root->ptr1->nodetype=='R')
 			{
@@ -827,12 +841,13 @@ void codegen(struct tree * root)
 			codegen(root->ptr2);
 			fprintf(fp,"JMP la%d\n",root_label->i);
 			fprintf(fp,"lb%d:\n",pop_label());
+			pop_while();
 			break;
 		case 'b':	//BREAK loop
-			fprintf(fp,"JMP lb%d\n",flag_break);
+			fprintf(fp,"JMP lb%d\n",root_while->i);
 			break;
 		case 't':	//CONTINUE loop
-			fprintf(fp,"JMP la%d\n",flag_break);
+			fprintf(fp,"JMP la%d\n",root_while->i);
 			break;
 		case 'L':
 			if(root->ptr1->nodetype=='R')
