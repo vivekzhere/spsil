@@ -5,11 +5,12 @@ define GFT_START 624;
 define READY_LIST_START 720;
 
 //freeing the address space of the current process by setting the corresponding memory free list entries to zero
-alias pageTblEntry S0;
+alias pgTblIndex S0;
 pgTblIndex = PGTBL_START+PID*4;
 S1=0;
 while(S1<4) do
-	[MEM_FREE_LIST_START+[pgTblIndex+S1]]=0;
+	S5=[pgTblIndex+S1];
+	[MEM_FREE_LIST_START+S5]=0;
 	S1=S1+1;
 endwhile;
 
@@ -19,11 +20,13 @@ lftIndex = PCB_START+PID*16+12;
 alias gftIndex S1;
 S2=0;
 while(S2<4) do
-	if([lftIndex+S2] == -1) then
+	S5=[lftIndex+S2];
+	if( S5== -1) then
 		S2=S2+1;
 		continue;
 	endif;
-	gftIndex = GFT_START+[ lftIndex + S2 ];
+	S5=[ lftIndex + S2 ];
+	gftIndex = GFT_START+S5;
 	[gftIndex] = -1;
 	[gftIndex+1] = -1;
     S2 = S2 + 1;
@@ -40,7 +43,8 @@ while( ( nextPID != PID ) ) do
 		nextPID = ( nextPID + 1 )%12;
 		continue;
 	endif;
-	if( [ READY_LIST + nextPID ] == 1 ) then
+	S5=[ READY_LIST_START + nextPID ];
+	if( S5 == 1 ) then
 		break;
 	endif;
 	nextPID = ( nextPID + 1 )%12;  // 12 denotes the total number of processes.

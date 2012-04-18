@@ -24,7 +24,8 @@ while( ( nextPID != PID ) ) do
 		nextPID = ( nextPID + 1 )%12;
 		continue;
 	endif;
-	if( [ READY_LIST + nextPID ] == 1 ) then
+	S5=[ READY_LIST + nextPID ];
+	if( S5 == 1 ) then
 		break;
 	endif;
 	nextPID = ( nextPID + 1 )%12;  // 12 denotes the total number of processes.
