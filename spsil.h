@@ -253,7 +253,7 @@ void codegen(struct tree * root)
 				else
 				{
 					codegen(root->ptr2);
-					fprintf(fp,"LT T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"GT T%d,%s\n",regcount-1,reg1);
 				}					
 			}
 			else
@@ -285,7 +285,7 @@ void codegen(struct tree * root)
 				else
 				{
 					codegen(root->ptr2);
-					fprintf(fp,"GT T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"LT T%d,%s\n",regcount-1,reg1);
 				}					
 			}
 			else
@@ -349,7 +349,7 @@ void codegen(struct tree * root)
 				else
 				{
 					codegen(root->ptr2);
-					fprintf(fp,"LE T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"GE T%d,%s\n",regcount-1,reg1);
 				}					
 			}
 			else
@@ -381,7 +381,7 @@ void codegen(struct tree * root)
 				else
 				{
 					codegen(root->ptr2);
-					fprintf(fp,"GE T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"LE T%d,%s\n",regcount-1,reg1);
 				}					
 			}
 			else

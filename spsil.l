@@ -133,11 +133,6 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('R',NULL,23);
 				return REG;
 			}
-						
-[-]?[0-9]+		{
-				create_node('c',NULL,atoi(yytext));
-				return NUM;
-			}
 			
 (==)			{
 				create_node('e',NULL,-1);
@@ -174,7 +169,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('x',NULL,-1);
 				return NOTOP;
 			}
-[-+]			{
+[+-]			{
 				create_node(*yytext,NULL,-1);
 				return ARITHOP1;			
 			}
@@ -193,8 +188,13 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('=',NULL,-1);
 				return ASSIGNOP;
 			}
+						
+[0-9]+			{
+				create_node('c',NULL,atoi(yytext));
+				return NUM;
+			}
 		
-[a-zA-Z][a-zA-Z0-9]*	{
+[a-zA-Z][a-zA-Z0-9_]*	{
 				create_node('i',yytext,-1);
 				return ID;
 			}	

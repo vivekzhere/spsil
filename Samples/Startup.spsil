@@ -1,7 +1,7 @@
 // Loading the interrupts.
 
-alias blockNo R8;
-alias pageNo R9;
+alias blockNo S0;
+alias pageNo S1;
 
 blockNo = 1;
 pageNo = 56;
@@ -25,7 +25,7 @@ load (7,10);
 
 // Initialsing the memory free list.
 
-alias memFreeList R8;
+alias memFreeList S0;
 memFreeList = 560;
 
 while( memFreeList <= 623 ) do
@@ -39,7 +39,7 @@ while( memFreeList <= 623 ) do
 endwhile;
 
 // Initialising The Ready List
-alias readyList R11;
+alias readyList S3;
 readyList = 720;
 
 while( readyList <= 731 ) do
@@ -49,8 +49,8 @@ endwhile;
 
 // Loading the init process.
 
-alias addrSpace R9;
-alias codeBlock R10;
+alias addrSpace S1;
+alias codeBlock S2;
 
 addrSpace = 8;
 codeBlock = 14;
@@ -68,12 +68,12 @@ endwhile;
 readyList = 720;
 [ readyList ] = 1;  // for the readyList value for init.
 
-PID = readyList % 720;
-SP = 11*256;
+PID = 0;
+SP = 768;
 BP = SP;
 IP = 8*256;         // setting the parameters for init.
 
-alias pageTable R12;
+alias pageTable S4;
 pageTable = 512;
 codeBlock = 14;
 while( pageTable <=514 ) do

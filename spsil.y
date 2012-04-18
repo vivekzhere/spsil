@@ -14,6 +14,7 @@
 %left ARITHOP1		// + and -
 %left ARITHOP2		// * , / and %
 %right NOTOP		// NOT Operator
+%left UMIN		// unary minus
 %%
 body:		definelistpad stmtlist			{
 								codegen($2);
@@ -33,6 +34,12 @@ definelist:						{
 
 definestmt:	DEFINE ID NUM ';'			{
 								insert_constant($2->name,$3->value);
+							}
+		|DEFINE ID ARITHOP1 NUM ';'		{
+								if($3->nodetype=='-')
+									insert_constant($2->name,-1*$4->value);
+								else
+									insert_constant($2->name,$3->value);
 							}
 		;
 
@@ -132,6 +139,11 @@ expr:		expr ARITHOP1 expr			{
 							}
 		|expr LOGOP expr			{
 								$$=create_tree($2,$1,$3,NULL);
+							}
+		|ARITHOP1 NUM	%prec UMIN		{
+								if($1->nodetype=='-')
+									$2->value=$2->value*-1;
+								$$=$2;
 							}
 		|NOTOP expr				{
 								$$=create_tree($1,$2,NULL,NULL);
