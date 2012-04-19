@@ -1,15 +1,8 @@
 #include<string.h>
 #define LEGAL 0
 extern int linecount;
-int flag_alias=LEGAL;
 int flag_break=0;
 int regcount=0;
-struct define
-{
-	char *name;
-	int value;
-	struct define *next;
-};
 struct tree
 {
 	char nodetype;		/*	+,-,*,/,%,=,<,>,!
@@ -26,10 +19,9 @@ struct tree
 	struct define *entry;
 	struct tree *ptr1,*ptr2,*ptr3;
 };
-struct define *root_define=NULL;
-FILE *fp;
-char alias_table[8][30];
 
+FILE *fp;
+						//start labels
 int labelcount=0;
 struct label
 {
@@ -71,6 +63,16 @@ void pop_while()
 	root_while=root_while->next;
 	free(temp);
 }
+						///end labels
+						///start constants and aliasing
+struct define
+{
+	char *name;
+	int value;
+	struct define *next;
+};
+struct define *root_define=NULL;
+char alias_table[8][30];
 struct define* lookup_constant(char *name)
 {
 	struct define *temp=root_define;	
@@ -82,16 +84,56 @@ struct define* lookup_constant(char *name)
 	}
 	return NULL;
 }
-int lookup_alias(char *name)
+int depth=0;
+struct alias
 {
-	int i=0;
-	while(i<8)
+	char name[30];
+	int no,depth;
+	struct alias *next;
+};
+struct alias *root_alias=NULL;
+struct alias * lookup_alias(char *name)
+{
+	struct alias *temp=root_alias;
+	while(temp!=NULL)
 	{
-		if(strcmp(alias_table[i],name)==0)
-			return(i+8);
-		i++;
+		if(strcmp(temp->name,name)==0)
+			return(temp);
+		temp=temp->next;
 	}
-	return(-1);
+	return(NULL);
+}
+void push_alias(char *name,int no)
+{
+	struct alias *temp;
+	if(lookup_constant(name)!=NULL)
+	{
+		printf("\n%d: Alias name %s already used as symbolic contant!!\n",linecount,name);
+		exit(0);
+	}
+	temp=lookup_alias(name);
+	if(temp!=NULL && temp->depth == depth)
+		strcpy(temp->name,name);
+	else
+	{	
+		temp=malloc(sizeof(struct alias));
+		strcpy(temp->name,name);
+		temp->no=no;
+		temp->depth=depth;
+		temp->next=root_alias;
+		root_alias=temp;		
+	}
+}
+void pop_alias()
+{
+	struct alias *temp;
+	temp=root_alias;
+	while(temp!=NULL && temp->depth==depth)
+	{
+		root_alias=temp->next;
+		free(temp);
+		temp=root_alias;
+	}
 }
 void insert_constant(char *name,int value)
 {
@@ -108,28 +150,6 @@ void insert_constant(char *name,int value)
 	else
 	{
 		printf("\n%d: Multiple definition of symbolic contant %s !!\n",linecount,name);
-		exit(0);
-	}
-} 
-void insert_alias(char *name,int value)
-{
-	struct define * temp;
-	if(flag_alias!=LEGAL)
-	{
-		printf("\n%d: Aliasing cannot be done within if and while!!\n",linecount);
-		exit(0);
-	}
-	if(!(value>=8 && value <=15))
-	{
-		printf("\n%d: Only kernel registers R8 to R15 can be aliased!!\n",linecount);
-		exit(0);
-	}	
-	temp=lookup_constant(name);
-	if(temp==NULL)
-		strcpy(alias_table[value-8],name);
-	else
-	{
-		printf("\n%d: Alias name %s already used as symbolic contant!!\n",linecount,name);
 		exit(0);
 	}
 }      
@@ -176,7 +196,31 @@ void add_predefined_constants()
 	if(lookup_constant(name)==NULL)
 		insert_constant(name,13824);	
 }
-
+struct tree * substitute_id(struct tree *id)
+{
+	struct define *temp;
+	struct alias *temp2;
+	temp=lookup_constant(id->name);
+	if(temp!=NULL)
+	{
+		id->nodetype='c';
+		id->name=NULL;
+		id->value=temp->value;
+		return(id);
+	}
+	temp2=lookup_alias(id->name);
+	if(temp2==NULL)
+	{
+		printf("\n%d: Unknown identifier %s used!!\n",linecount,id->name);
+		exit(0);
+	}
+	id->nodetype='R';
+	id->name=NULL;
+	id->value=temp2->no;
+	return(id);
+}
+							///end of constants and alias
+							///start tree create fns
 struct tree * create_nonterm_node(char *name,struct tree *a,struct tree *b)
 {
 	struct tree *temp=malloc(sizeof(struct tree));
@@ -194,29 +238,7 @@ struct tree * create_tree(struct tree *a,struct tree *b,struct tree *c,struct tr
 	a->ptr2=c;
 	a->ptr3=d;	
 }
-struct tree * substitute_id(struct tree *id)
-{
-	struct define *temp;
-	int n;
-	temp=lookup_constant(id->name);
-	if(temp!=NULL)
-	{
-		id->nodetype='c';
-		id->name=NULL;
-		id->value=temp->value;
-		return(id);
-	}
-	n=lookup_alias(id->name);
-	if(n<0)
-	{
-		printf("\n%d: Unknown identifier %s used!!\n",linecount,id->name);
-		exit(0);
-	}
-	id->nodetype='R';
-	id->name=NULL;
-	id->value=n;
-	return(id);
-}
+							///end tree create fns
 void getreg(struct tree *root,char reg[])
 {
 	if(root->value>=0 && root->value<=7)

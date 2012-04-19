@@ -87,20 +87,23 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 							}
 		|ifpad expr THEN stmtlist ENDIF ';'	{								
 								$$=create_tree($1,$2,$4,NULL);
-								flag_alias--;
+								pop_alias();
+								depth--;
 							}								
 		|ifpad expr THEN stmtlist
-		ELSE stmtlist ENDIF ';'			{	
+		elsepad stmtlist ENDIF ';'		{	
 								$$=create_tree($1,$2,$4,$6);
-								flag_alias--;
+								pop_alias();
+								depth--;
 							}
 		|whilepad expr DO stmtlist ENDWHILE ';'	{
 								$$=create_tree($1,$2,$4,NULL);
-								flag_alias--;
+								pop_alias();
+								depth--;
 								flag_break=0;
 							}
 		|ALIAS ID REG ';'			{	
-								insert_alias($2->name,$3->value);
+								push_alias($2->name,$3->value);
 								$$=NULL;
 							}
 		|LOAD '(' expr ',' expr ')' ';'		{
@@ -168,13 +171,17 @@ expr:		expr ARITHOP1 expr			{
 		;
 
 ifpad:		IF					{
-								flag_alias++;
+								depth++;
 								$$=$1;
+							}
+		;
+elsepad:	ELSE					{
+								pop_alias();
 							}
 		;
 
 whilepad:	WHILE					{
-								flag_alias++;
+								depth++;
 								flag_break=1;
 								$$=$1;
 							}

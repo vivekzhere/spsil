@@ -2,7 +2,7 @@ define FAT_START 1024;
 define DISK_FREE_LIST_START 1536;
 define PAGE_TABLE_START 512;
 define PCB_START 768;
-define READY_LIST_START 720;
+define READY_LIST 720;
 define MEM_FREE_LIST_START 560;
 define GFT_START 624;
 
@@ -13,21 +13,23 @@ if(syscallNo == 7) then                     // Fork system call.
 	// Searching the readyList for the next free entry.
 	alias nextFreePID S1;
 	nextFreePID = PID + 1;
-	while( [ READY_LIST + nextFreePID ] != 0 && nextFreePID != PID ) do
+	S7=[ READY_LIST + nextFreePID ];
+	while( S7 != 0 && nextFreePID != PID ) do
 		nextFreePID = ( nextFreePID + 1 )%12;  // 12 denotes the total number of processes.
 	endwhile;
 
 	if(nextFreePID == PID) then		//when no free entry is found(List is full)
 		[BP+1]=-1;				//-1 denotes failure
 		ireturn;
-	endif
+	endif;
 
 	// All the registers of the parent process are replicated in the child's PCB.
 	[PCB_START + nextFreePID*16] = nextFreePID;
-	S2 = 1;
+	alias PCB_COUNT S7;
+	PCB_COUNT = 1;
 	while( S2 < 12 ) do			//replicating the register values
-		  [PCB_START + (nextFreePID*16) + S2] = [PCB_Start + (PID*16) + S3];
-		  PCB_Count = PCB_Count + 1;
+		  [PCB_START + (nextFreePID*16) + S2] = [PCB_START + (PID*16) + S3];
+		  PCB_COUNT = PCB_COUNT + 1;
 	endwhile;
 	
 	//replicating the GFT entries
