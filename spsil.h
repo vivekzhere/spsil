@@ -12,7 +12,7 @@ struct tree
 						g-greaterthan or equals		w-while
 						b-boolean constants
 						a-AND		o-OR		x-NOT
-						b-break		t-continue
+						b-break		t-continue	m-addresing expr
 							*/
 	char *name;
 	int value;
@@ -698,129 +698,71 @@ void codegen(struct tree * root)
 			}			
 			break;
 		case '=':
-			switch(root->value)
+			if(root->ptr1->nodetype=='m') //[expr/no]=*
 			{
-				case 0:			//reg=y
-					getreg(root->ptr1,reg1);
-					if(root->ptr2->nodetype=='R')		//reg=reg
+				
+				if(root->ptr1->ptr1->nodetype=='c')	//[no]=*
+				{
+					if(root->ptr2->nodetype=='R')		//[no]=reg
 					{
 						getreg(root->ptr2,reg2);
-						fprintf(fp,"MOV %s,%s\n",reg1,reg2);	
+						fprintf(fp,"MOV [%d],%s\n",root->ptr1->ptr1->value,reg2);	
 					}
-					else if(root->ptr2->nodetype=='c')	//reg=no
+					else if(root->ptr2->nodetype=='c')	//[no]=no
 					{
-						fprintf(fp,"MOV %s,%d\n",reg1,root->ptr2->value);
+						fprintf(fp,"MOV [%d],%d\n",root->ptr1->ptr1->value,root->ptr2->value);
 					}
-					else					//reg=expr
+					else					//[no]=expr
 					{
 						codegen(root->ptr2);
-						fprintf(fp,"MOV %s,T%d\n",reg1,regcount-1);
+						fprintf(fp,"MOV [%d],T%d\n",root->ptr1->ptr1->value,regcount-1);
 						regcount--;
 					}
-					break;
-				case 1:			//reg=[y]
-					getreg(root->ptr1,reg1);
-					if(root->ptr2->nodetype=='R')		//reg=[reg]
+				}
+				else				//[expr]=*
+				{
+					codegen(root->ptr1->ptr1);
+					if(root->ptr2->nodetype=='R')		//[expr]=reg
 					{
 						getreg(root->ptr2,reg2);
-						fprintf(fp,"MOV %s,[%s]\n",reg1,reg2);	
+						fprintf(fp,"MOV [T%d],%s\n",regcount-1,reg2);	
 					}
-					else if(root->ptr2->nodetype=='c')	//reg=[no]
+					else if(root->ptr2->nodetype=='c')	//[expr]=no
 					{
-						fprintf(fp,"MOV %s,[%d]\n",reg1,root->ptr2->value);
+						fprintf(fp,"MOV [T%d],%d\n",regcount-1,root->ptr2->value);
 					}
-					else					//reg=[expr]
+					else					//[expr]=expr
 					{
 						codegen(root->ptr2);
-						fprintf(fp,"MOV %s,[T%d]\n",reg1,regcount-1);
+						fprintf(fp,"MOV [T%d],T%d\n",regcount-2,regcount-1);
 						regcount--;
 					}
-					break;
-				case 2:			//[expr/no]=y
-					if(root->ptr1->nodetype=='c')	//[no]=y
-					{
-						if(root->ptr2->nodetype=='R')		//[no]=reg
-						{
-							getreg(root->ptr2,reg2);
-							fprintf(fp,"MOV [%d],%s\n",root->ptr1->value,reg2);	
-						}
-						else if(root->ptr2->nodetype=='c')	//[no]=no
-						{
-							fprintf(fp,"MOV [%d],%d\n",root->ptr1->value,root->ptr2->value);
-						}
-						else					//[no]=expr
-						{
-							codegen(root->ptr2);
-							fprintf(fp,"MOV [%d],T%d\n",root->ptr1->value,regcount-1);
-							regcount--;
-						}
-					}
-					else				//[expr]=y
-					{
-						codegen(root->ptr1);
-						if(root->ptr2->nodetype=='R')		//[expr]=reg
-						{
-							getreg(root->ptr2,reg2);
-							fprintf(fp,"MOV [T%d],%s\n",regcount-1,reg2);	
-						}
-						else if(root->ptr2->nodetype=='c')	//[expr]=no
-						{
-							fprintf(fp,"MOV [T%d],%d\n",regcount-1,root->ptr2->value);
-						}
-						else					//[expr]=expr
-						{
-							codegen(root->ptr2);
-							fprintf(fp,"MOV [T%d],T%d\n",regcount-2,regcount-1);
-							regcount--;
-						}
-						regcount--;
-					}
-					break;
-				case 3:			//[x]=[y]
-					if(root->ptr1->nodetype=='c')	//[no]=[y]
-					{
-						if(root->ptr2->nodetype=='R')		//[no]=[reg]
-						{
-							getreg(root->ptr2,reg2);
-							fprintf(fp,"MOV [%d],[%s]\n",root->ptr1->value,reg2);	
-						}
-						else if(root->ptr2->nodetype=='c')	//[no]=[no]
-						{
-							fprintf(fp,"MOV [%d],[%d]\n",root->ptr1->value,root->ptr2->value);
-						}
-						else					//[no]=[expr]
-						{
-							codegen(root->ptr2);
-							fprintf(fp,"MOV [%d],[T%d]\n",root->ptr1->value,regcount-1);
-							regcount--;
-						}
-					}
-					else				//[expr]=[y]
-					{
-						codegen(root->ptr1);
-						if(root->ptr2->nodetype=='R')		//[expr]=[reg]
-						{
-							getreg(root->ptr2,reg2);
-							fprintf(fp,"MOV [T%d],[%s]\n",regcount-1,reg2);	
-						}
-						else if(root->ptr2->nodetype=='c')	//[expr]=[no]
-						{
-							fprintf(fp,"MOV [T%d],[%d]\n",regcount-1,root->ptr2->value);
-						}
-						else					//[expr]=[expr]
-						{
-							codegen(root->ptr2);
-							fprintf(fp,"MOV [T%d],[T%d]\n",regcount-2,regcount-1);
-							regcount--;
-						}
-						regcount--;
-					}
-					break;
-				default:
-					printf("Invalid value in assignment %d.\n",root->value);
-//debugging
-					break;
+					regcount--;
+				}
 			}
+			else				//reg=*
+			{			
+				getreg(root->ptr1,reg1);
+				if(root->ptr2->nodetype=='R')		//reg=reg
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"MOV %s,%s\n",reg1,reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')	//reg=no
+				{
+					fprintf(fp,"MOV %s,%d\n",reg1,root->ptr2->value);
+				}
+				else					//reg=expr
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"MOV %s,T%d\n",reg1,regcount-1);
+					regcount--;
+				}			
+			}			
+			break;
+		case 'm':	//addresing
+			codegen(root->ptr1);
+			fprintf(fp,"MOV T%d,[T%d]\n",regcount-1,regcount-1);
 			break;
 		case 'c':	//constants
 			fprintf(fp,"MOV T%d,%d\n",regcount,root->value);

@@ -149,7 +149,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return RELOP;
 			}
 			
-(!=)			{
+"!="			{
 				create_node('!',NULL,-1);
 				return RELOP;
 			}

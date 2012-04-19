@@ -58,32 +58,18 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 									exit(0);
 								}								
 								$$=create_tree($1,$3,$5,NULL);
-							}
-		|ids ASSIGNOP expr ';'	 		{	
-								if($1->nodetype!='R')
+							}	
+		|expr ASSIGNOP expr ';'	 		{
+								if($1->nodetype=='R' || $1->nodetype=='m')
 								{
-									printf("\n%d:Invalid operand in assignment!!\n",linecount);
+									$2->value=2;
+									$$=create_tree($2,$1,$3,NULL);
+								}
+								else
+								{
+									printf("\n%d:Invalid operands in assignment!!\n",linecount);
 									exit(0);
 								}
-								$2->value=0;
-								$$=create_tree($2,$1,$3,NULL);
-							}
-		|ids ASSIGNOP '['expr']' ';' 		{
-								if($1->nodetype!='R')
-								{
-									printf("\n%d:Invalid operand in assignment!!\n",linecount);
-									exit(0);
-								}
-								$2->value=1;
-								$$=create_tree($2,$1,$4,NULL);
-							}
-		|'['expr']' ASSIGNOP expr ';'	 	{
-								$4->value=2;
-								$$=create_tree($4,$2,$5,NULL);
-							}
-		|'['expr']' ASSIGNOP '['expr']' ';'	{
-								$4->value=3;
-								$$=create_tree($4,$2,$6,NULL);
 							}
 		|ifpad expr THEN stmtlist ENDIF ';'	{								
 								$$=create_tree($1,$2,$4,NULL);
@@ -151,10 +137,14 @@ expr:		expr ARITHOP1 expr			{
 		|NOTOP expr				{
 								$$=create_tree($1,$2,NULL,NULL);
 							}
+		|'['expr']'				{
+								$$=create_nonterm_node("addr",$2,NULL);
+								$$->nodetype='m';
+							}					
 		|'('expr')'				{
 								$$=$2;
 							}
-		|STRCMP '(' ids ',' ids ')' ';'		{	
+		|STRCMP '(' ids ',' ids ')'		{	
 								if($3->nodetype!='R' || $5->nodetype!='R')
 								{
 									printf("\n%d:Invalid operands in strcmp!!\n",linecount);

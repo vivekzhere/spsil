@@ -61,17 +61,17 @@ if(syscallNo == 7) then                     // Fork system call.
 	alias nextFreePage S2;
 	nextFreePage = 0;
 	alias currPage S3;
-	S4=0
+	S4=0;
 	while( S4 < 4 ) do		// Code, Data & Stack Page for the parent process is replicated in the child process.
 		while( [ MEM_FREE_LIST_START + nextFreePage ] == 1 ) do
 			nextFreePage = nextFreePage + 1;
 		endwhile;
-		[PageTable_Start + nextFreePID*4 + S4] = nextFreePage;
+		[PAGE_TABLE_START + nextFreePID*4 + S4] = nextFreePage;
 		currPage = [PAGE_TABLE_START + PID*4 + S4];
 		
 		S5 = 0;
 		while(S5 <= 255) do
-			[nextFreePage*256 + wordCount] = [currPage*256 + wordCount];
+			[nextFreePage*256 + S5] = [currPage*256 + S5];
 			S5 = S5 + 1;
 		endwhile;
 		S4 = S4 + 1;  
@@ -84,16 +84,16 @@ else
 	alias fileNameAddr S1;
 	fileNameAddr=[SP-2];	//logical address of the filename string in the page table
 	alias pageTableEntry S2;	//page table entry for data section
-	pageTableEntry=[PAGE_TABLE_START+PID*4+2]
-	fileNameAddr=pageTableEntry+fileName%256;
+	pageTableEntry=[PAGE_TABLE_START+PID*4+2];
+	fileNameAddr=pageTableEntry+fileNameAddr%256;
 
 	//For finding the basic block number of the file
 	alias fatFileNameAddr S3;
 	fatFileNameAddr=FAT_START;
-	while(!strcmp(fileNameAddr,fatFileNameAddr))do
+	while( strcmp(fileNameAddr,fatFileNameAddr)==0 ) do
 		fatFileNameAddr=fatFileNameAddr+16;
 	endwhile;
-	if(fatFileAddr==DISK_FREE_LIST_START)then
+	if(fatFileNameAddr==DISK_FREE_LIST_START)then
 		[BP+1]=1;
 		ireturn;
 	endif;
