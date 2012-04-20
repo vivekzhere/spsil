@@ -187,7 +187,7 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	fp=fopen("code.esim","w");
+	fp=fopen("spcode.esim","w");
 	 fprintf(fp,"START\n");
 	return yyparse();
 }

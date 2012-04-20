@@ -103,9 +103,20 @@ struct alias * lookup_alias(char *name)
 	}
 	return(NULL);
 }
+struct alias * lookup_alias_reg(int no)
+{
+	struct alias *temp=root_alias;
+	while(temp!=NULL)
+	{
+		if(no==temp->no)
+			return(temp);
+		temp=temp->next;
+	}
+	return(NULL);
+}
 void push_alias(char *name,int no)
 {
-	struct alias *temp;
+	struct alias *temp;		
 	if(lookup_constant(name)!=NULL)
 	{
 		printf("\n%d: Alias name %s already used as symbolic contant!!\n",linecount,name);
@@ -113,15 +124,23 @@ void push_alias(char *name,int no)
 	}
 	temp=lookup_alias(name);
 	if(temp!=NULL && temp->depth == depth)
-		strcpy(temp->name,name);
+	{
+		printf("\n%d: Alias name %s already used as in the current block!!\n",linecount,name);
+		exit(0);
+	}
 	else
-	{	
-		temp=malloc(sizeof(struct alias));
-		strcpy(temp->name,name);
-		temp->no=no;
-		temp->depth=depth;
-		temp->next=root_alias;
-		root_alias=temp;		
+	{	temp=lookup_alias_reg(no);
+		if(temp!=NULL && temp->depth==depth)
+			strcpy(temp->name,name);
+		else
+		{
+			temp=malloc(sizeof(struct alias));
+			strcpy(temp->name,name);
+			temp->no=no;
+			temp->depth=depth;
+			temp->next=root_alias;
+			root_alias=temp;
+		}		
 	}
 }
 void pop_alias()
