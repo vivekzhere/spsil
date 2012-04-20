@@ -114,7 +114,7 @@ PID	& Process Identifier \\
 \end{center}
 
 \subsection{Aliasing}
-Any register can be referred to by using a different name. A name is assigned to a particular register using the \textbf{alias} keyword. Each register can be assigned to only one alias at any particular point of time. However, a  register can be reassigned to a different alias at a later point. No two registers can have the same alias name simultaneously.
+Any register can be referred to by using a different name. A name is assigned to a particular register using the \textbf{alias} keyword. Each register can be assigned to only one alias at any particular point of time. However, a  register can be reassigned to a different alias at a later point. Aliasing can also be done inside the \textbf{if} and \textbf{while} block. However, the alias will only be valid within the if and while block it is defined in. The already defined alias for the register(if any) will only be hidden inside if and while blocks. No two registers can have the same alias name simultaneously.
 
 
 
@@ -196,7 +196,7 @@ Define statement is used to define a symbolic name for a value. Define statement
 
 
 \subsection{Alias Statement}
-An \textbf{alias} statement is used to  associate a kernel register (R8 to R15) with a name. \textbf{Alias} statements can be used anywhere in the program except within \textbf{if} and \textbf{while} statements.\\
+An \textbf{alias} statement is used to  associate a register with a name. \textbf{Alias} statements can be used anywhere in the program except within \textbf{if} and \textbf{while} statements.\\
 
 \indent \textit{ \textbf{alias}  alias\_name register\_name ;} \\
 
