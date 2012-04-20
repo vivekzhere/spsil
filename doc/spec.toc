@@ -15,13 +15,15 @@
 \contentsline {subsection}{\numberline {5.1}Arithmetic Expressions}{5}{subsection.5.1}
 \contentsline {subsection}{\numberline {5.2}Logical Expressions}{5}{subsection.5.2}
 \contentsline {subsection}{\numberline {5.3}String Comparison}{6}{subsection.5.3}
-\contentsline {section}{\numberline {6}Addressing}{6}{section.6}
-\contentsline {section}{\numberline {7}Statements}{6}{section.7}
-\contentsline {subsection}{\numberline {7.1}Define Statement}{6}{subsection.7.1}
-\contentsline {subsection}{\numberline {7.2}Alias Statement}{6}{subsection.7.2}
-\contentsline {subsection}{\numberline {7.3}Assignment Statement}{7}{subsection.7.3}
-\contentsline {subsection}{\numberline {7.4}strcpy Statement}{7}{subsection.7.4}
-\contentsline {subsection}{\numberline {7.5}If Statement}{7}{subsection.7.5}
-\contentsline {subsection}{\numberline {7.6}While Statement}{7}{subsection.7.6}
-\contentsline {subsection}{\numberline {7.7}ireturn Statement}{8}{subsection.7.7}
-\contentsline {subsection}{\numberline {7.8}Load / Store Statements}{8}{subsection.7.8}
+\contentsline {subsection}{\numberline {5.4}Addressing Expression}{6}{subsection.5.4}
+\contentsline {section}{\numberline {6}Statements}{6}{section.6}
+\contentsline {subsection}{\numberline {6.1}Define Statement}{6}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Alias Statement}{6}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Assignment Statement}{7}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}strcpy Statement}{7}{subsection.6.4}
+\contentsline {subsection}{\numberline {6.5}If Statement}{7}{subsection.6.5}
+\contentsline {subsection}{\numberline {6.6}While Statement}{7}{subsection.6.6}
+\contentsline {subsection}{\numberline {6.7}Break statement}{8}{subsection.6.7}
+\contentsline {subsection}{\numberline {6.8}Continue statement}{8}{subsection.6.8}
+\contentsline {subsection}{\numberline {6.9}ireturn Statement}{8}{subsection.6.9}
+\contentsline {subsection}{\numberline {6.10}Load / Store Statements}{8}{subsection.6.10}

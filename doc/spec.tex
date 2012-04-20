@@ -57,8 +57,8 @@ The following are the reserved words in SPSIL and it cannot be used as identifie
 
 \begin{tabular}{c c c c c }
 \kw{alias} 		& 	\kw{else} 		& 	\kw{if} 		&    \kw{store} 	&   \kw{while}     \\
-\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	 \kw{strcmp}  	&  \\
-\kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	&
+\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	 \kw{strcmp}  	&  \kw{continue}\\
+\kw{break}      & \kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	
 \end{tabular}
 
 
@@ -78,7 +78,7 @@ The following are the operators and delimiters in SPSIL   \\
 
 %*********%
 \subsection{Registers}
-SPSIL allows the use of 19 registers for various operations.(R0-R15, BP, SP, IP)
+SPSIL allows the use of 20 registers for various operations.(R0-R7, S0-S7, BP, SP, IP, PID)
 
 %*********%
 \subsection{Identifiers}
@@ -93,14 +93,14 @@ Only integer literals are permitted in SPSIL. An integer literal is a sequence o
 %-----------------------------Registers-------------------------%%
 \section{Register Set}
 
-SPSIL doesn't allow the use of declared variables. Instead a fixed set of registers is provided. The register set in SPSIL contains 19 registers. There is a direct mapping between these registers and the machine registers in ESIM.   \\
+SPSIL doesn't allow the use of declared variables. Instead a fixed set of registers is provided. The register set in SPSIL contains 20 registers. There is a direct mapping between these registers and the machine registers in ESIM.   \\
 
 \begin{center}
 \begin{tabular}{| c | c | }
 \hline
 R0-R7 & Program Registers \\
 \hline
-R8-R15 & Kernel Registers \\
+S0-S7 & Kernel Registers \\
 \hline
 BP 		& Base Pointer \\
 \hline
@@ -108,11 +108,13 @@ SP		& Stack Pointer \\
 \hline
 IP		& Instruction Pointer \\
 \hline
+PID	& Process Identifier \\
+\hline
 \end{tabular}
 \end{center}
 
 \subsection{Aliasing}
-Kernel Registers (R8 to R15) can be referred to by using a different name. A name is assigned to a particular register using the \textbf{alias} keyword. Each register can be assigned to only one alias at any particular point of time. However, a  register can be reassigned to a different alias at a later point. No two registers can have the same alias name simultaneously.
+Any register can be referred to by using a different name. A name is assigned to a particular register using the \textbf{alias} keyword. Each register can be assigned to only one alias at any particular point of time. However, a  register can be reassigned to a different alias at a later point. No two registers can have the same alias name simultaneously.
 
 
 
@@ -171,14 +173,14 @@ Standard  meanings apply to these operators. A relational operator will take in 
 \subsection{String Comparison}
 The only operation that can be performed on strings stored in memory is string camparison. \textbf{strcmp} is used to compare two strings whose address is stored in the registers that are given as operands. \\
 
- e.g. \textit{strcmp(R9,R10)}
+ e.g. \textit{strcmp(R2,R5)}
 
 
-%----------------------Addressing---------------------------%
-\section{Addressing}
-Memory of the meachine can be directly accessed in an SPSIL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression can be used to specify the address. An addressing element cannot be used in an expression. \\
+\subsection{Addressing Expression}
+Memory of the meachine can be directly accessed in an SPSIL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression or an addressing expression can be used to specify the address. \\
 
-Examples of addressing: [1024], [R9], [R10+R11+128], [FAT] etc.
+Examples of addressing expressions: \\\   
+ [1024], [R3], [R5+[S7]+128], [FAT + (PID*16) + S2] etc.
 
 %-----------------________Statements---------------------------_%
 \section{Statements}
@@ -230,6 +232,17 @@ The SPSIL \textbf{strcpy} statement copies a string in one memory location to an
 \indent \textbf{endwhile;}  \\
 }
 
+
+\subsection{Break statement}
+\textbf{Break} statement is a statement which is used in a while loop block. This statement stops the execution of the loop in which it is used and passes the control of execution to the next statement after the loop. This statement cannot be used anywhere else other than while loop. The syntax is as follows\\
+
+\textit{\textbf{break} ;}
+
+
+\subsection{Continue statement}
+\textbf{Continue} statement is a statement which is also used only in a while loop block. This statement skips the current iteration of the loop and passes the control to the next iteration after checking the loop condition. The syntax is as follows\\
+
+\textit{\textbf{continue} ;}
 
 \subsection{ireturn Statement}
 \textbf{ireturn} statement is used to pass control from kernel mode to user mode. The \textbf{ireturn} is generally used at the end of an interrupt code.
