@@ -1,10 +1,10 @@
-all:	a.out
+all:	spsil
 lex.yy.c:	spsil.l
 		lex spsil.l
 
 y.tab.c:	spsil.y spsil.h	
 		yacc -d spsil.y
-a.out:		lex.yy.c y.tab.c	
-		gcc lex.yy.c y.tab.c -lfl
+spsil:		lex.yy.c y.tab.c	
+		gcc lex.yy.c y.tab.c -lfl -o spsil
 clean:
-	rm -rf *.out *~ y.* lex.*
+	rm -rf spsil *~ y.* lex.*
