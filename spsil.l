@@ -104,6 +104,11 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return CONTINUE;
 			}			
 
+"halt"			{
+				create_node('h',NULL,-1);
+				return HALT;
+			}
+
 [R]([0-7])  		{
 				create_node('R',NULL,atoi(yytext+1));
 				return REG;
