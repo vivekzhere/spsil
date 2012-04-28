@@ -601,8 +601,11 @@ void codegen(struct tree * root)
 				}
 				else
 				{
+					fprintf(fp,"MOV T%d,%s\n",regcount,reg1);
+					regcount++;
 					codegen(root->ptr2);
-					fprintf(fp,"SUB T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"SUB T%d,T%d\n",regcount-2,regcount-1);
+					regcount--;
 				}					
 			}
 			else
@@ -665,8 +668,11 @@ void codegen(struct tree * root)
 				}
 				else
 				{
+					fprintf(fp,"MOV T%d,%s\n",regcount,reg1);
+					regcount++;
 					codegen(root->ptr2);
-					fprintf(fp,"DIV T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"DIV T%d,T%d\n",regcount-2,regcount-1);
+					regcount--;
 				}					
 			}
 			else
@@ -697,8 +703,11 @@ void codegen(struct tree * root)
 				}
 				else
 				{
+					fprintf(fp,"MOV T%d,%s\n",regcount,reg1);
+					regcount++;
 					codegen(root->ptr2);
-					fprintf(fp,"MOD T%d,%s\n",regcount-1,reg1);
+					fprintf(fp,"MOD T%d,T%d\n",regcount-2,regcount-1);
+					regcount--;
 				}					
 			}
 			else
