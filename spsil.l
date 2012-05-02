@@ -109,6 +109,32 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return HALT;
 			}
 
+"chkpt"			{
+				return CHKPT;
+				create_node('C',NULL,-1);
+			}
+			
+"in"			{	//not required
+				create_node('1',NULL,-1);
+				return IN;
+			}
+			
+"out"			{
+				create_node('2',NULL,-1);
+				return OUT;
+			}
+			
+"sin"			{
+				create_node('3',NULL,-1);
+				return SIN;
+			}
+			
+"sout"			{
+				create_node('4',NULL,-1);
+				return SOUT;
+				//not required
+			}
+			
 [R]([0-7])  		{
 				create_node('R',NULL,atoi(yytext+1));
 				return REG;

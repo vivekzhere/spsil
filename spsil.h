@@ -13,7 +13,8 @@ struct tree
 						b-boolean constants
 						a-AND		o-OR		x-NOT
 						b-break		t-continue	m-addresing expr
-						h-halt
+						h-halt		C-checkpoint		
+						1-IN	2-OUT	3-SIN	4-SOUT
 							*/
 	char *name;
 	int value;
@@ -937,6 +938,9 @@ void codegen(struct tree * root)
 			 break;
 		case 'h':
 			fprintf(fp,"HALT\n");
+			break;
+		case 'C':
+			fprintf(fp,"chkpt\n");
 			break;
 		default:
 			printf("Unknown nodetype %c\n",root->nodetype);		//Debugging
