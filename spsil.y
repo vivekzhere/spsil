@@ -51,12 +51,12 @@ stmtlist:	stmtlist stmt 				{
 							}
 		;
 
-stmt:		STRCPY '(' ids ',' ids ')' ';'		{	
-								if($3->nodetype!='R' || $5->nodetype!='R')
+stmt:		STRCPY '(' expr ',' expr ')' ';'	{	
+								/*if($3->nodetype!='R' || $5->nodetype!='R')
 								{
 									printf("\n%d:Invalid operands in strcpy!!\n",linecount);
 									exit(0);
-								}								
+								}*/								
 								$$=create_tree($1,$3,$5,NULL);
 							}	
 		|expr ASSIGNOP expr ';'	 		{
@@ -121,6 +121,28 @@ stmt:		STRCPY '(' ids ',' ids ')' ';'		{
 		|CHKPT ';'				{	
 							$$=$1;
 							}
+		|IN ids ';'				{	
+								if($2->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in IN!!\n",linecount);
+									exit(0);
+								}							
+								$$=create_tree($1,$2,NULL,NULL);
+							}
+		|OUT expr ';'				{
+								$$=create_tree($1,$2,NULL,NULL);
+							}
+		|SIN ids ';'				{	
+								if($2->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in SIN!!\n",linecount);
+									exit(0);
+								}							
+								$$=create_tree($1,$2,NULL,NULL);
+							}
+		|SOUT expr ';'				{
+								$$=create_tree($1,$2,NULL,NULL);
+							}	
 		;
 	
 				
@@ -151,12 +173,12 @@ expr:		expr ARITHOP1 expr			{
 		|'('expr')'				{
 								$$=$2;
 							}
-		|STRCMP '(' ids ',' ids ')'		{	
-								if($3->nodetype!='R' || $5->nodetype!='R')
+		|STRCMP '(' expr ',' expr ')'		{	
+								/*if($3->nodetype!='R' || $5->nodetype!='R')
 								{
 									printf("\n%d:Invalid operands in strcmp!!\n",linecount);
 									exit(0);
-								}								
+								}	*/							
 								$$=create_tree($1,$3,$5,NULL);
 							}
 		|NUM					{	

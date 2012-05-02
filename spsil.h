@@ -5,17 +5,19 @@ int flag_break=0;
 int regcount=0;
 struct tree
 {
-	char nodetype;		/*	+,-,*,/,%,=,<,>,!
-						?-if statement
-						c-number,	i-identifier,	r-read,		p-print,
-						n-nonterminal,	e-double equals,	l-lessthan or equals
-						g-greaterthan or equals		w-while
-						b-boolean constants
-						a-AND		o-OR		x-NOT
-						b-break		t-continue	m-addresing expr
-						h-halt		C-checkpoint		
-						1-IN	2-OUT	3-SIN	4-SOUT
-							*/
+	char nodetype;		/*	+,-,*,/,%,=,<,>
+					?-if statement,		I-ireturn,	L-load
+					S-store,	P-strcmp,	Y-strcpy,	w-while,
+					R-register  //value=0-15,20-SP,21-BP,22-IP
+					e-double equals,	l-lessthan or equals
+					g-greaterthan or equals		!-not equal
+					a-AND		o-OR		x-NOT
+					c-number,	i-identifier,
+					n-nonterminal
+					b-break		t-continue	m-addresing expr
+					h-halt		C-checkpoint	I-ireturn		
+					1-IN	2-OUT	3-SIN	4-SOUT
+						*/
 	char *name;
 	int value;
 	struct define *entry;
@@ -347,7 +349,7 @@ void codegen(struct tree * root)
 				}
 			}			
 			break;
-		case 'e':
+		case 'e':		//double equals
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1,reg1);
@@ -379,7 +381,7 @@ void codegen(struct tree * root)
 				}
 			}			
 			break;
-		case 'l':
+		case 'l':		//lessthan or equals
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1,reg1);
@@ -411,7 +413,7 @@ void codegen(struct tree * root)
 				}
 			}			
 			break;
-		case 'g':
+		case 'g':		//greaterthan or equals	
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1,reg1);
@@ -443,7 +445,7 @@ void codegen(struct tree * root)
 				}
 			}			
 			break;
-		case '!':
+		case '!':		//not equal
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1,reg1);
@@ -727,7 +729,7 @@ void codegen(struct tree * root)
 				}
 			}			
 			break;
-		case '=':
+		case '=':		//assignment
 			if(root->ptr1->nodetype=='m') //[expr/no]=*
 			{
 				
@@ -843,7 +845,7 @@ void codegen(struct tree * root)
 		case 't':	//CONTINUE loop
 			fprintf(fp,"JMP la%d\n",root_while->i);
 			break;
-		case 'L':
+		case 'L':	//Load
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1,reg1);
@@ -880,7 +882,7 @@ void codegen(struct tree * root)
 				regcount--;
 			}			
 			break;
-		case 'S':
+		case 'S':	//Store
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1,reg1);
@@ -917,30 +919,104 @@ void codegen(struct tree * root)
 				regcount--;
 			}			
 			break;
-		case 'P':
-			getreg(root->ptr1,reg1);
-			getreg(root->ptr2,reg2);
-			fprintf(fp,"MOV T%d,%s\nSTRCMP T%d,%s\n",regcount,reg1,regcount,reg2);
-			regcount++;		
+		case 'P':	//strcmp
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1,reg1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"MOV T%d,%s\nSTRCMP T%d,%s\n",regcount,reg1,regcount,reg2);
+					regcount++;
+				}
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"STRCMP T%d,%s\n",regcount-1,reg1);
+				}
+			}
+			else
+			{
+				codegen(root->ptr1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"STRCMP T%d,%s\n",regcount-1,reg2);
+				}
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"STRCMP T%d,T%d\n",regcount-2,regcount-1);
+					regcount--;
+				}
+			}		
 			break;
-		case 'Y':
-			getreg(root->ptr1,reg1);
-			getreg(root->ptr2,reg2);
-			fprintf(fp,"MOV T%d,%s\nSTRCPY T%d,%s\n",regcount,reg1,regcount,reg2);		
-			break;
-		case 'I':
+		case 'Y':	//strcpy
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1,reg1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"MOV T%d,%s\nSTRCPY T%d,%s\n",regcount,reg1,regcount,reg2);
+				}
+				else
+				{
+					fprintf(fp,"MOV T%d,%s\n",regcount,reg1);
+					regcount++;
+					codegen(root->ptr2);
+					fprintf(fp,"STRCPY T%d,T%d\n",regcount-2,regcount-1);
+					regcount-=2;
+				}
+			}
+			else
+			{
+				codegen(root->ptr1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2,reg2);
+					fprintf(fp,"STRCPY T%d,%s\n",regcount-1,reg2);
+				}
+				else
+				{
+					codegen(root->ptr2);
+					fprintf(fp,"STRCMP T%d,T%d\n",regcount-2,regcount-1);
+					regcount--;
+				}
+				regcount--;
+			}		
+			break;			
+		case 'I':	//Ireturn
 			fprintf(fp,"IRET\n");
 			break;
-		case 'R':
+		case 'R':	//register
 			 getreg(root,reg1);
 			 fprintf(fp,"MOV T%d,%s\n",regcount,reg1);
 			 regcount++;
 			 break;
-		case 'h':
+		case 'h':	//halt
 			fprintf(fp,"HALT\n");
 			break;
-		case 'C':
-			fprintf(fp,"chkpt\n");
+		case 'C':	//checkpoint
+			fprintf(fp,"BRKP\n");
+			break;
+		case '1':	//IN
+			getreg(root->ptr1,reg1);
+			fprintf(fp,"IN %s\n",reg1);
+			break;
+		case '2':	//OUT
+			codegen(root->ptr1);
+			fprintf(fp,"OUT T%d\n",regcount-1);
+			regcount--;
+			break;
+		case '3':	//SIN
+			getreg(root->ptr1,reg1);
+			fprintf(fp,"SIN %s\n",reg1);
+			break;
+		case '4':	//SOUT
+			codegen(root->ptr1);
+			fprintf(fp,"SOUT T%d\n",regcount-1);
+			regcount--;
 			break;
 		default:
 			printf("Unknown nodetype %c\n",root->nodetype);		//Debugging

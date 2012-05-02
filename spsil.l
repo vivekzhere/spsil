@@ -18,6 +18,9 @@ struct tree
 					a-AND		o-OR		x-NOT
 					c-number,	i-identifier,
 					n-nonterminal
+					b-break		t-continue	m-addresing expr
+					h-halt		C-checkpoint	I-ireturn		
+					1-IN	2-OUT	3-SIN	4-SOUT
 						*/
 	char *name;
 	int value;
@@ -109,27 +112,27 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return HALT;
 			}
 
-"chkpt"			{
+"breakpoint"		{
 				return CHKPT;
 				create_node('C',NULL,-1);
 			}
 			
-"in"			{	//not required
+"IN"			{	//not required
 				create_node('1',NULL,-1);
 				return IN;
 			}
 			
-"out"			{
+"OUT"			{
 				create_node('2',NULL,-1);
 				return OUT;
 			}
 			
-"sin"			{
+"SIN"			{
 				create_node('3',NULL,-1);
 				return SIN;
 			}
 			
-"sout"			{
+"SOUT"			{
 				create_node('4',NULL,-1);
 				return SOUT;
 				//not required
