@@ -113,8 +113,8 @@ void create_node(char, char*, int);	//nodetype,name,value
 			}
 
 "breakpoint"		{
-				return CHKPT;
 				create_node('C',NULL,-1);
+				return CHKPT;
 			}
 			
 "IN"			{	//not required
