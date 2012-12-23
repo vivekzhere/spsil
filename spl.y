@@ -1,7 +1,7 @@
 %{
 #include<stdio.h>
 #include<stdlib.h>
-#include "spsil.h"
+#include "spl.h"
 %}
 %union
 {
@@ -216,7 +216,7 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	fp=fopen("spcode.esim","w");
+	fp=fopen("syscode.spl","w");
 	 fprintf(fp,"START\n");
 	return yyparse();
 }
