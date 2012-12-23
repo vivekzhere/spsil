@@ -12,7 +12,7 @@ struct tree
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
 					S-store,	P-strcmp,	Y-strcpy,	w-while,
-					R-register  //value=0-15,20-SP,21-BP,22-IP
+					R-register  //value=0-15,  20-SP,  21-BP,  22-IP, 23-PTBR, 24-PTLR
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
 					a-AND		o-OR		x-NOT
@@ -138,36 +138,36 @@ void create_node(char, char*, int);	//nodetype,name,value
 				//not required
 			}
 			
-[R]([0-7])  		{
+[R]([0-15])  		{
 				create_node('R',NULL,atoi(yytext+1));
 				return REG;
 			}
 			
-[S]([0-7])  		{
-				create_node('R',NULL,atoi(yytext+1)+8);
-				return REG;
-			}
 				
 "BP"			{
-				create_node('R',NULL,20);
-				return REG;
-			}
-
-"SP"			{
 				create_node('R',NULL,21);
 				return REG;
 			}
 
-"IP"			{
+"SP"			{
 				create_node('R',NULL,22);
 				return REG;
 			}
 
-"PID"			{
+"IP"			{
 				create_node('R',NULL,23);
 				return REG;
 			}
-			
+
+"PTBR"			{
+				create_node('R',NULL,24);
+				return REG;
+			}
+"PTLR"			{
+				create_node('R',NULL,25);
+				return REG;
+			}
+		
 (==)			{
 				create_node('e',NULL,-1);
 				return RELOP;

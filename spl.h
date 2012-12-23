@@ -1,5 +1,20 @@
 #include<string.h>
 #define LEGAL 0
+
+//Pre-defined constants in SPL
+#define SCRATCHPAD 	512
+#define PAGE TABLE	1024
+#define MEM LIST	1280
+#define FILE TABLE	1344
+#define READY LIST	1536
+#define FAT			2560
+#define DISK LIST	3072
+#define EX HANDLER	3584
+#define T INTERRUPT	4096
+#define INTERRUPT	4608
+#define USER PROG	8192
+
+
 extern int linecount;
 int flag_break=0;
 int regcount=0;
@@ -8,7 +23,7 @@ struct tree
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
 					S-store,	P-strcmp,	Y-strcpy,	w-while,
-					R-register  //value=0-15,20-SP,21-BP,22-IP
+					R-register  //value=0-15,20-SP,21-BP,22-IP 23-PTBR 24-PTLR
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
 					a-AND		o-OR		x-NOT
@@ -172,7 +187,7 @@ void insert_constant(char *name,int value)
 	}
 	else
 	{
-		printf("\n%d: Multiple definition of symbolic contant %s !!\n",linecount,name);
+		printf("\n%d: Multiple Definition for Contant %s \n",linecount,name);
 		exit(0);
 	}
 }      
@@ -182,43 +197,49 @@ void add_predefined_constants()
 	char name[15];
 	strcpy(name,"SCRATCHPAD");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,256);
+		insert_constant(name,SCRATCHPAD);
 		
 	strcpy(name,"PAGE_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,512);
+		insert_constant(name,PAGE_TABLE);
 		
-	strcpy(name,"MEM LIST");
+	strcpy(name,"MEM_LIST");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,576);
+		insert_constant(name,MEM_LIST);
 		
-	strcpy(name,"FILE TABLE");
+	strcpy(name,"FILE_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,640);
+		insert_constant(name,FILE_TABLE);
 		
-	strcpy(name,"READY LIST");
+	strcpy(name,"READY_LIST");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,736);
-		
-	strcpy(name,"PROC TABLE");
-	if(lookup_constant(name)==NULL)
-		insert_constant(name,767);
+		insert_constant(name,READY_LIST);
 		
 	strcpy(name,"FAT");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,1024);
+		insert_constant(name,FAT);
 		
-	strcpy(name,"DISK LIST");
+	strcpy(name,"DISK_LIST");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,1536);
-	strcpy(name,"USER PROG");
+		insert_constant(name,DISK_LIST);
+		
+	strcpy(name,"EX_HANDLER");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,1792);
+		insert_constant(name,EX_HANDLERT);	
+			
+	strcpy(name,"T_INTERRUPT");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name,T_INTERRUPT);	
 		
 	strcpy(name,"INTERRUPT");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,13824);	
+		insert_constant(name,INTERRUPT);	
+		
+	strcpy(name,"USER_PROG");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name,USER_PROG);
 }
+
 struct tree * substitute_id(struct tree *id)
 {
 	struct define *temp;
@@ -268,14 +289,16 @@ void getreg(struct tree *root,char reg[])
 		sprintf(reg,"R%d",root->value);
 	else if(root->value>=8 && root->value<=15)
 		sprintf(reg,"S%d",(root->value)-8);
-	else if(root->value==20)
-		sprintf(reg,"BP");
 	else if(root->value==21)
-		sprintf(reg,"SP");
+		sprintf(reg,"BP");
 	else if(root->value==22)
+		sprintf(reg,"SP");
+	else if(root->value==23)
 		sprintf(reg,"IP");
-	else
-		 sprintf(reg,"PID"); 
+	else if(root->value==24)
+		sprintf(reg,"PTBR");
+	else if(root->value==25)
+		sprintf(reg,"PTLR");		
 }
 void codegen(struct tree * root)
 {
@@ -1019,7 +1042,7 @@ void codegen(struct tree * root)
 			regcount--;
 			break;
 		default:
-			printf("Unknown nodetype %c\n",root->nodetype);		//Debugging
+			printf("Unknown Command %c\n",root->nodetype);		//Debugging
 			return;
 	}
 }
