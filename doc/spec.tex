@@ -132,26 +132,29 @@ The predefined set of constants provided in SPL are \\
 \hline
 \textbf{Name} & \textbf{Default Value} \\
 \hline
-SCRATCHPAD 	& 	256 \\
+SCRATCHPAD 	& 	512 \\
 \hline
-PAGE\_TABLE 	& 	512  \\
+PAGE\_TABLE 	& 	1024  \\
 \hline
-MEM\_LIST 	&	576 	\\
+MEM\_LIST 	&	1280 	\\
 \hline
-FILE\_TABLE 	& 	640		\\
+FILE\_TABLE 	& 	1344		\\
 \hline
-READY\_LIST 	& 	736	\\
+READY\_LIST 	& 	1536	\\
 \hline
-PROC\_TABLE 	& 	767 \\
+FAT 		& 	2560    \\
 \hline
-FAT 		& 	1024    \\
+DISK\_LIST 	& 	3072 	\\
 \hline
-DISK\_LIST 	& 	1536 	\\
+EXP\_HANDLER & 	3584	\\
 \hline
-USER\_PROG 	& 	1792	\\
+T\_INTERRUPT & 	4096	\\
 \hline
-INTERRUPT & 	13824	\\
+INTERRUPT & 	4608	\\
 \hline
+USER\_PROG 	& 	8192	\\
+\hline
+
 \end{tabular}
 \end{center}
 
@@ -181,7 +184,7 @@ The only operation that can be performed on strings stored in memory is string c
 Memory of the meachine can be directly accessed in an SPL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression or an addressing expression can be used to specify the address. \\
 
 Examples of addressing expressions: \\\   
- [1024], [R3], [R5+[S7]+128], [FAT + (PID*16) + S2] etc.
+ [1024], [R3], [R5+[S7]+128], [FAT + S2] etc.
 
 %-----------------________Statements---------------------------_%
 \section{Statements}
