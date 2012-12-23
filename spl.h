@@ -3,17 +3,16 @@
 
 //Pre-defined constants in SPL
 #define SCRATCHPAD 	512
-#define PAGE TABLE	1024
-#define MEM LIST	1280
-#define FILE TABLE	1344
-#define READY LIST	1536
+#define PAGE_TABLE	1024
+#define MEM_LIST	1280
+#define FILE_TABLE	1344
+#define READY_LIST	1536
 #define FAT			2560
-#define DISK LIST	3072
-#define EX HANDLER	3584
-#define T INTERRUPT	4096
+#define DISK_LIST	3072
+#define EX_HANDLER	3584
+#define T_INTERRUPT	4096
 #define INTERRUPT	4608
-#define USER PROG	8192
-
+#define USER_PROG	8192
 
 extern int linecount;
 int flag_break=0;
@@ -225,7 +224,7 @@ void add_predefined_constants()
 		
 	strcpy(name,"EX_HANDLER");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name,EX_HANDLERT);	
+		insert_constant(name,EX_HANDLER);	
 			
 	strcpy(name,"T_INTERRUPT");
 	if(lookup_constant(name)==NULL)
