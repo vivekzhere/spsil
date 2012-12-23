@@ -5,7 +5,7 @@
 \usepackage[bookmarks]{hyperref}
 
 
-\title{SPSIL \\ Language Specification \\
+\title{SPL \\ \textit{System Programmer's Language} \\ Specification \\
 Version 1.0}
 \author{Dr. K. Muralikrishnan  \\ \texttt{kmurali@nitc.ac.in} \\ {NIT Calicut} }
 
@@ -34,7 +34,7 @@ pdfborder= 0 0 0
 
 \section{Introduction}
 \paragraph{}
-\textit{SPSIL} or \textit{System Programmer's Simple Integer Language} is an untyped programming language designed for implementation of an operating system on ESIM \textit{(Extended Simple Integer Machine)} architecture. The language is minimalistic and consists only of basic constructs required for the implementation. Programming using SPSIL requires a  basic understanding of the underlying ESIM architecture and operating system concepts. 
+\textit{SPL} or \textit{System Programmer's  Language} is an untyped programming language designed for implementation of an operating system on XSM \textit{(Experimental String Machine)} architecture. The language is minimalistic and consists only of basic constructs required for the implementation. Programming using SPL requires a  basic understanding of the underlying XSM architecture and operating system concepts. 
 
 
 
@@ -47,13 +47,12 @@ pdfborder= 0 0 0
 %*********%
 \subsection{Comments and White Spaces}
 
-SPSIL allows only single line comments. Comments start with the character sequence \textbf{//} and stop at the end of the line. 
-White spaces in the program including tabs, newline and horizontal spaces are ignored.
+SPL allows only single line comments. Comments start with the character sequence \textbf{//} and stop at the end of the line. White spaces in the program including tabs, newline and horizontal spaces are ignored.
 
 
 %*********%
 \subsection{Keywords}
-The following are the reserved words in SPSIL and it cannot be used as identifiers.
+The following are the reserved words in SPL and it cannot be used as identifiers.
 
 \begin{tabular}{c c c c c }
 \kw{alias} 		& 	\kw{else} 		& 	\kw{if} 		&    \kw{store} 	&   \kw{while}     \\
@@ -67,7 +66,7 @@ The following are the reserved words in SPSIL and it cannot be used as identifie
 %*********%
 \subsection{Operators and Delimiters}
 
-The following are the operators and delimiters in SPSIL   \\
+The following are the operators and delimiters in SPL   \\
 
 \begin{tabular}{c c c c c c c c c c c c }
 ( 		 			& 		) 		& 			;		 &			[		&		 ]    &
@@ -78,7 +77,7 @@ The following are the operators and delimiters in SPSIL   \\
 
 %*********%
 \subsection{Registers}
-SPSIL allows the use of 20 registers for various operations.(R0-R7, S0-S7, BP, SP, IP, PID)
+SPL allows the use of 21 registers for various operations.(R0-R7, S0-S7, BP, SP, IP, PTBR, PTLR)
 
 %*********%
 \subsection{Identifiers}
@@ -86,14 +85,14 @@ Identifiers are used as symbolic names for constants and aliases for registers. 
 
 %*********%
 \subsection{Literals}
-Only integer literals are permitted in SPSIL. An integer literal is a sequence of digits representing an integer. Negative integers are represented with a negative sign preceding the sequence of digits.  
+Only integer literals are permitted in SPL. An integer literal is a sequence of digits representing an integer. Negative integers are represented with a negative sign preceding the sequence of digits.  
 
 
 
 %-----------------------------Registers-------------------------%%
 \section{Register Set}
 
-SPSIL doesn't allow the use of declared variables. Instead a fixed set of registers is provided. The register set in SPSIL contains 20 registers. There is a direct mapping between these registers and the machine registers in ESIM.   \\
+SPL doesn't allow the use of declared variables. Instead a fixed set of registers is provided. The register set in SPL contains 26 registers. There is a direct mapping between these registers and the machine registers in XSM.   \\
 
 \begin{center}
 \begin{tabular}{| c | c | }
@@ -123,9 +122,9 @@ Any register can be referred to by using a different name. A name is assigned to
 Symbolic names can be assigned to values using the \textbf{define} keyword. Unlike aliasing, two or more names can be assigned to the same value. A constant can only be defined once in a program.
 	
 \subsection{Predefined Constants}
-SPSIL provides a set of predefined constants. These predefined constants can be assigned to different values explicitly by the user using \textbf{define} keyword. These constants are mostly starting addresses of various OS components in the memory.
+SPL provides a set of predefined constants. These predefined constants can be assigned to different values explicitly by the user using \textbf{define} keyword. These constants are mostly starting addresses of various OS components in the memory.
 
-The predefined set of constants provided in SPSIL are \\
+The predefined set of constants provided in SPL are \\
 \begin{center}
 \begin{tabular}{| c | c |}
 \hline
@@ -157,16 +156,16 @@ INTERRUPT & 	13824	\\
 
 %----------------------------Expressions-------------------------_%
 \section{Expressions}
-An expression specifies the computation of a value by applying operators to operands. SPSIL supports arithmetic and logical expressions.
+An expression specifies the computation of a value by applying operators to operands. SPL supports arithmetic and logical expressions.
 
 \subsection{Arithmetic Expressions}
 
-Registers, constants, and 2 or more arithmetic expressions connected using arithmetic operators are categorized as arithmetic expressions. SPSIL provides five arithmetic operators, viz., +, -, *, / (Integer Division) and \% (Modulo operator) through which arithmetic expressions may be combined. Expression syntax and semantics are similar to standard practice in programming languages and normal rules of precedence, associativity and paranthesization hold. 
+Registers, constants, and 2 or more arithmetic expressions connected using arithmetic operators are categorized as arithmetic expressions. SPL provides five arithmetic operators, viz., +, -, *, / (Integer Division) and \% (Modulo operator) through which arithmetic expressions may be combined. Expression syntax and semantics are similar to standard practice in programming languages and normal rules of precedence, associativity and paranthesization hold. 
 
 
 \subsection{Logical Expressions}
 
-Logical expressions may be formed by combining arithmetic expressions using relational operators. The relational operators supported by SPSIL are \begin{verbatim}  <, >, <=, >=, ==, !=
+Logical expressions may be formed by combining arithmetic expressions using relational operators. The relational operators supported by SPL are \begin{verbatim}  <, >, <=, >=, ==, !=
 \end{verbatim}
 Standard  meanings apply to these operators. A relational operator will take in two arguments and return 1 if the relation is valid and 0 otherwise. Logical expressions themselves may be combined using logical operators, \&\& (logical and) ,  $\Vert$ (logical or) and ! (not).
 
@@ -177,7 +176,7 @@ The only operation that can be performed on strings stored in memory is string c
 
 
 \subsection{Addressing Expression}
-Memory of the meachine can be directly accessed in an SPSIL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression or an addressing expression can be used to specify the address. \\
+Memory of the meachine can be directly accessed in an SPL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression or an addressing expression can be used to specify the address. \\
 
 Examples of addressing expressions: \\\   
  [1024], [R3], [R5+[S7]+128], [FAT + (PID*16) + S2] etc.
@@ -185,12 +184,12 @@ Examples of addressing expressions: \\\
 %-----------------________Statements---------------------------_%
 \section{Statements}
 
-Statements control the execution of the program. All statements in SPSIL are terminated with a semicolon ;
+Statements control the execution of the program. All statements in SPL are terminated with a semicolon ;
 
 
 
 \subsection{Define Statement}
-Define statement is used to define a symbolic name for a value. Define statements should be  used before any other statment in an SPSIL program. The keyword \textbf{define} is used to associate a literal to a symbolic name. \\
+Define statement is used to define a symbolic name for a value. Define statements should be  used before any other statment in an SPL program. The keyword \textbf{define} is used to associate a literal to a symbolic name. \\
 
 \textit{ \textbf{define} constant\_name value; }
 
@@ -202,12 +201,12 @@ An \textbf{alias} statement is used to  associate a register with a name. \textb
 
 
 \subsection{Assignment Statement}
-The SPSIL assignment statement assigns the value of an  expression or value stored in a memory address to a register or a memory address. \textbf{=} is the assignment operator used in SPSIL. The operand on the right hand side of the operator is assigned to the left hand side. The general syntax is as follows \\
+The SPL assignment statement assigns the value of an  expression or value stored in a memory address to a register or a memory address. \textbf{=} is the assignment operator used in SPL. The operand on the right hand side of the operator is assigned to the left hand side. The general syntax is as follows \\
 
 \indent \textit{ Register / Alias / [Address] = Expression / [Address] ;}
 
 \subsection{strcpy Statement}
-The SPSIL \textbf{strcpy} statement copies a string in one memory location to another memory location. Registers which store the  memory location of the destination and the source are given as R{\tiny d} and R{\tiny s} respectively.\\
+The SPL \textbf{strcpy} statement copies a string in one memory location to another memory location. Registers which store the  memory location of the destination and the source are given as R{\tiny d} and R{\tiny s} respectively.\\
 \indent \textit{ \textbf{strcpy}(R{\tiny d}, R{\tiny s});}
 
 \subsection{If Statement}
@@ -251,7 +250,7 @@ The SPSIL \textbf{strcpy} statement copies a string in one memory location to an
 
 
 \subsection{Load / Store Statements}
-Loading and storing between filesystem and memory is accomplished using \textbf{load} and \textbf{store} statements in SPSIL. \textbf{load} statement loads the block specified by \textit{block\_number} from the disk to the the page speficied by the \textit{page\_number} in the memory. \textbf{store} statement stores the page specified by \textit{page\_number} in the memory to the the block speficied by the \textit{block\_number} in the disk. The page number and block number can be specified using arithmetic expressions.
+Loading and storing between filesystem and memory is accomplished using \textbf{load} and \textbf{store} statements in SPL. \textbf{load} statement loads the block specified by \textit{block\_number} from the disk to the the page speficied by the \textit{page\_number} in the memory. \textbf{store} statement stores the page specified by \textit{page\_number} in the memory to the the block speficied by the \textit{block\_number} in the disk. The page number and block number can be specified using arithmetic expressions.
 
 \textit{\textbf{load} (page\_number, block\_number);}
 
