@@ -77,7 +77,7 @@ The following are the operators and delimiters in SPL   \\
 
 %*********%
 \subsection{Registers}
-SPL allows the use of 21 registers for various operations.(R0-R7, S0-S7, BP, SP, IP, PTBR, PTLR)
+SPL allows the use of 21 registers for various operations.(R0-R15, BP, SP, IP, PTBR, PTLR)
 
 %*********%
 \subsection{Identifiers}
@@ -99,7 +99,7 @@ SPL doesn't allow the use of declared variables. Instead a fixed set of register
 \hline
 R0-R7 & Program Registers \\
 \hline
-S0-S7 & Kernel Registers \\
+R8-R15 & Kernel Registers \\
 \hline
 BP 		& Base Pointer \\
 \hline
@@ -184,7 +184,7 @@ The only operation that can be performed on strings stored in memory is string c
 Memory of the meachine can be directly accessed in an SPL program. A word in the memory is accessed by specifying the addressing element, i.e. memory location within [ ]. This  corresponds to the value stored in the given address. An arithmetic expression or an addressing expression can be used to specify the address. \\
 
 Examples of addressing expressions: \\\   
- [1024], [R3], [R5+[S7]+128], [FAT + S2] etc.
+ [1024], [R3], [R5+[R7]+128], [FAT + R2] etc.
 
 %-----------------________Statements---------------------------_%
 \section{Statements}
