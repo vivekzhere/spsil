@@ -85,7 +85,7 @@ void pop_while()
 						///start constants and aliasing
 struct define
 {
-	char *name;
+	char name[30];
 	int value;
 	struct define *next;
 };
@@ -179,7 +179,7 @@ void insert_constant(char *name, int value)
 	if(temp==NULL)
 	{
 		temp=malloc(sizeof(struct define));
-		temp->name=name;
+		strcpy(temp->name,name);
 		temp->value=value;
 		temp->next=root_define;
 		root_define=temp;
@@ -194,46 +194,58 @@ void add_predefined_constants()
 {
 	struct define * temp;
 	char name[15];
+	
+	bzero(name,15);
 	strcpy(name, "SCRATCHPAD");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, SCRATCHPAD);
 		
+	bzero(name,15);
 	strcpy(name, "PAGE_TABLE");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, PAGE_TABLE);
 		
+	bzero(name,15);
 	strcpy(name, "MEM_LIST");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, MEM_LIST);
 		
+	bzero(name,15);
 	strcpy(name, "FILE_TABLE");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, FILE_TABLE);
 		
+	bzero(name,15);
 	strcpy(name, "READY_LIST");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, READY_LIST);
 		
+	bzero(name,15);
 	strcpy(name, "FAT");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, FAT);
 		
+	bzero(name,15);
 	strcpy(name, "DISK_LIST");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, DISK_LIST);
 		
+	bzero(name,15);
 	strcpy(name, "EX_HANDLER");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, EX_HANDLER);	
 			
+	bzero(name,15);
 	strcpy(name, "T_INTERRUPT");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, T_INTERRUPT);	
 		
+	bzero(name,15);
 	strcpy(name, "INTERRUPT");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, INTERRUPT);	
 		
+	bzero(name,15);
 	strcpy(name, "USER_PROG");
 	if(lookup_constant(name)==NULL)
 		insert_constant(name, USER_PROG);

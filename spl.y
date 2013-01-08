@@ -39,7 +39,7 @@ definestmt:	DEFINE ID NUM ';'			{
 								if($3->nodetype=='-')
 									insert_constant($2->name,-1*$4->value);
 								else
-									insert_constant($2->name,$3->value);
+									insert_constant($2->name,$4->value);
 							}
 		;
 
