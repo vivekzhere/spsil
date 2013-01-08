@@ -12,7 +12,7 @@ struct tree
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
 					S-store,	P-strcmp,	Y-strcpy,	w-while,
-					R-register  //value=0-15,  20-SP,  21-BP,  22-IP, 23-PTBR, 24-PTLR
+					R-register  //value=0-15,  20-BP,  21-SP,  22-IP, 23-PTBR, 24-PTLR, 25-EFR
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
 					a-AND		o-OR		x-NOT
@@ -20,7 +20,7 @@ struct tree
 					n-nonterminal
 					b-break		t-continue	m-addresing expr
 					h-halt		C-checkpoint	I-ireturn		
-					1-IN	2-OUT	3-SIN	4-SOUT
+					1-IN	2-OUT	s-STRING
 						*/
 	char *name;
 	int value;
@@ -127,17 +127,6 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return OUT;
 			}
 			
-"SIN"			{
-				create_node('3',NULL,-1);
-				return SIN;
-			}
-			
-"SOUT"			{
-				create_node('4',NULL,-1);
-				return SOUT;
-				//not required
-			}
-			
 [R]([0-15])  		{
 				create_node('R',NULL,atoi(yytext+1));
 				return REG;
@@ -145,25 +134,29 @@ void create_node(char, char*, int);	//nodetype,name,value
 			
 				
 "BP"			{
-				create_node('R',NULL,21);
+				create_node('R',NULL,20);
 				return REG;
 			}
 
 "SP"			{
-				create_node('R',NULL,22);
+				create_node('R',NULL,21);
 				return REG;
 			}
 
 "IP"			{
-				create_node('R',NULL,23);
+				create_node('R',NULL,22);
 				return REG;
 			}
 
 "PTBR"			{
-				create_node('R',NULL,24);
+				create_node('R',NULL,23);
 				return REG;
 			}
 "PTLR"			{
+				create_node('R',NULL,24);
+				return REG;
+			}
+"EFR"			{
 				create_node('R',NULL,25);
 				return REG;
 			}
@@ -227,7 +220,12 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('c',NULL,atoi(yytext));
 				return NUM;
 			}
-		
+
+[\"].*[\"]		{	
+				create_node('s',yytext,-1);
+				return STRING;
+			}
+					
 [a-zA-Z][a-zA-Z0-9_]*	{
 				create_node('i',yytext,-1);
 				return ID;

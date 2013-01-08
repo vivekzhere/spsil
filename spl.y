@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT SIN SOUT
-%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT SIN SOUT
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT STRING
+%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT STRING
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -132,17 +132,6 @@ stmt:		STRCPY '(' expr ',' expr ')' ';'	{
 		|OUT expr ';'				{
 								$$=create_tree($1,$2,NULL,NULL);
 							}
-		|SIN ids ';'				{	
-								if($2->nodetype!='R')
-								{
-									printf("\n%d:Invalid operand in SIN!!\n",linecount);
-									exit(0);
-								}							
-								$$=create_tree($1,$2,NULL,NULL);
-							}
-		|SOUT expr ';'				{
-								$$=create_tree($1,$2,NULL,NULL);
-							}	
 		;
 	
 				
@@ -187,6 +176,9 @@ expr:		expr ARITHOP1 expr			{
 		|ids					{
 								$$=$1;
 							}
+		|STRING					{
+								$$=$1;
+							}
 		;
 
 ifpad:		IF					{
@@ -216,8 +208,8 @@ ids:		ID					{
 %%
 int main (void)
 {	
-	fp=fopen("syscode.spl","w");
-	 fprintf(fp,"START\n");
+	fp=fopen("code.xsm","w");
+	fprintf(fp,"START\n");
 	return yyparse();
 }
 
