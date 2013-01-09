@@ -117,12 +117,12 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return CHKPT;
 			}
 			
-"IN"			{	//not required
+"read"			{	
 				create_node('1',NULL,-1);
 				return IN;
 			}
 			
-"OUT"			{
+"print"			{
 				create_node('2',NULL,-1);
 				return OUT;
 			}
