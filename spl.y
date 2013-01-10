@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT STRING
-%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT STRING
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT STRING PUSH POP
+%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT STRING PUSH POP
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -51,15 +51,7 @@ stmtlist:	stmtlist stmt 				{
 							}
 		;
 
-stmt:		STRCPY '(' expr ',' expr ')' ';'	{	
-								/*if($3->nodetype!='R' || $5->nodetype!='R')
-								{
-									printf("\n%d:Invalid operands in strcpy!!\n",linecount);
-									exit(0);
-								}*/								
-								$$=create_tree($1,$3,$5,NULL);
-							}	
-		|expr ASSIGNOP expr ';'	 		{
+stmt:		expr ASSIGNOP expr ';'	 		{
 								if($1->nodetype=='R' || $1->nodetype=='m')
 								{
 									$2->value=2;
@@ -124,12 +116,23 @@ stmt:		STRCPY '(' expr ',' expr ')' ';'	{
 		|IN ids ';'				{	
 								if($2->nodetype!='R')
 								{
-									printf("\n%d:Invalid operand in IN!!\n",linecount);
+									printf("\n%d:Invalid operand in read!!\n",linecount);
 									exit(0);
 								}							
 								$$=create_tree($1,$2,NULL,NULL);
 							}
 		|OUT expr ';'				{
+								$$=create_tree($1,$2,NULL,NULL);
+							}
+		|PUSH expr ';'				{
+								$$=create_tree($1,$2,NULL,NULL);
+							}
+		|POP ids ';'				{	
+								if($2->nodetype!='R')
+								{
+									printf("\n%d:Invalid operand in pop!!\n",linecount);
+									exit(0);
+								}							
 								$$=create_tree($1,$2,NULL,NULL);
 							}
 		;
@@ -161,14 +164,6 @@ expr:		expr ARITHOP1 expr			{
 							}					
 		|'('expr')'				{
 								$$=$2;
-							}
-		|STRCMP '(' expr ',' expr ')'		{	
-								/*if($3->nodetype!='R' || $5->nodetype!='R')
-								{
-									printf("\n%d:Invalid operands in strcmp!!\n",linecount);
-									exit(0);
-								}	*/							
-								$$=create_tree($1,$3,$5,NULL);
 							}
 		|NUM					{	
 								$$=$1;

@@ -7,7 +7,7 @@
 #define MEM_LIST	1280
 #define FILE_TABLE	1344
 #define READY_LIST	1536
-#define FAT			2560
+#define FAT		2560
 #define DISK_LIST	3072
 #define EX_HANDLER	3584
 #define T_INTERRUPT	4096
@@ -968,73 +968,6 @@ void codegen(struct tree * root)
 				}
 				regcount--;
 			}			
-			break;
-		case 'P':	//strcmp
-			if(root->ptr1->nodetype=='R')
-			{
-				getreg(root->ptr1, reg1);
-				if(root->ptr2->nodetype=='R')
-				{
-					getreg(root->ptr2, reg2);
-					fprintf(fp, "MOV T%d, %s\nSTRCMP T%d, %s\n", regcount, reg1, regcount, reg2);
-					regcount++;
-				}
-				else
-				{
-					codegen(root->ptr2);
-					fprintf(fp, "STRCMP T%d, %s\n", regcount-1, reg1);
-				}
-			}
-			else
-			{
-				codegen(root->ptr1);
-				if(root->ptr2->nodetype=='R')
-				{
-					getreg(root->ptr2, reg2);
-					fprintf(fp, "STRCMP T%d, %s\n", regcount-1, reg2);
-				}
-				else
-				{
-					codegen(root->ptr2);
-					fprintf(fp, "STRCMP T%d, T%d\n", regcount-2, regcount-1);
-					regcount--;
-				}
-			}		
-			break;
-		case 'Y':	//strcpy
-			if(root->ptr1->nodetype=='R')
-			{
-				getreg(root->ptr1, reg1);
-				if(root->ptr2->nodetype=='R')
-				{
-					getreg(root->ptr2, reg2);
-					fprintf(fp, "MOV T%d, %s\nSTRCPY T%d, %s\n", regcount, reg1, regcount, reg2);
-				}
-				else
-				{
-					fprintf(fp, "MOV T%d, %s\n", regcount, reg1);
-					regcount++;
-					codegen(root->ptr2);
-					fprintf(fp, "STRCPY T%d, T%d\n", regcount-2, regcount-1);
-					regcount-=2;
-				}
-			}
-			else
-			{
-				codegen(root->ptr1);
-				if(root->ptr2->nodetype=='R')
-				{
-					getreg(root->ptr2, reg2);
-					fprintf(fp, "STRCPY T%d, %s\n", regcount-1, reg2);
-				}
-				else
-				{
-					codegen(root->ptr2);
-					fprintf(fp, "STRCMP T%d, T%d\n", regcount-2, regcount-1);
-					regcount--;
-				}
-				regcount--;
-			}		
 			break;			
 		case 'I':	//Ireturn
 			fprintf(fp, "IRET\n");
@@ -1050,14 +983,23 @@ void codegen(struct tree * root)
 		case 'C':	//checkpoint
 			fprintf(fp, "BRKP\n");
 			break;
-		case '1':	//IN
+		case '1':	//read
 			getreg(root->ptr1, reg1);
 			fprintf(fp, "IN %s\n", reg1);
 			break;
-		case '2':	//OUT
+		case '2':	//print
 			codegen(root->ptr1);
 			fprintf(fp, "OUT T%d\n", regcount-1);
 			regcount--;
+			break;
+		case '3':	//push
+			codegen(root->ptr1);
+			fprintf(fp, "PUSH T%d\n", regcount-1);
+			regcount--;
+			break;
+		case '4':	//pop
+			getreg(root->ptr1, reg1);
+			fprintf(fp, "POP %s\n", reg1);
 			break;
 		default:
 			printf("Unknown Command %c\n", root->nodetype);		//Debugging

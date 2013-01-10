@@ -20,7 +20,7 @@ struct tree
 					n-nonterminal
 					b-break		t-continue	m-addresing expr
 					h-halt		C-checkpoint	I-ireturn		
-					1-IN	2-OUT	s-STRING
+					1-read	2-print	3-push 4-pop s-STRING
 						*/
 	char *name;
 	int value;
@@ -77,16 +77,6 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('S',NULL,-1);
 				return STORE;
 			}
-
-"strcmp"		{
-				create_node('P',NULL,-1);
-				return STRCMP;
-			}
-
-"strcpy"		{
-				create_node('Y',NULL,-1);
-				return STRCPY;
-			}
 				
 "then"			{
 				return THEN;
@@ -125,6 +115,14 @@ void create_node(char, char*, int);	//nodetype,name,value
 "print"			{
 				create_node('2',NULL,-1);
 				return OUT;
+			}
+"push"			{
+				create_node('3',NULL,-1);
+				return PUSH;
+			}
+"pop"			{
+				create_node('4',NULL,-1);
+				return POP;
 			}
 			
 [R]([0-15])  		{
