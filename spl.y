@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT STRING PUSH POP
-%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT STRING PUSH POP
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT STRING
+%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT STRING
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -122,17 +122,6 @@ stmt:		expr ASSIGNOP expr ';'	 		{
 								$$=create_tree($1,$2,NULL,NULL);
 							}
 		|OUT expr ';'				{
-								$$=create_tree($1,$2,NULL,NULL);
-							}
-		|PUSH expr ';'				{
-								$$=create_tree($1,$2,NULL,NULL);
-							}
-		|POP ids ';'				{	
-								if($2->nodetype!='R')
-								{
-									printf("\n%d:Invalid operand in pop!!\n",linecount);
-									exit(0);
-								}							
 								$$=create_tree($1,$2,NULL,NULL);
 							}
 		;

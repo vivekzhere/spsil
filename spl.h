@@ -992,15 +992,6 @@ void codegen(struct tree * root)
 			fprintf(fp, "OUT T%d\n", regcount-1);
 			regcount--;
 			break;
-		case '3':	//push
-			codegen(root->ptr1);
-			fprintf(fp, "PUSH T%d\n", regcount-1);
-			regcount--;
-			break;
-		case '4':	//pop
-			getreg(root->ptr1, reg1);
-			fprintf(fp, "POP %s\n", reg1);
-			break;
 		default:
 			printf("Unknown Command %c\n", root->nodetype);		//Debugging
 			return;
