@@ -56,8 +56,9 @@ The following are the reserved words in SPL and it cannot be used as identifiers
 
 \begin{tabular}{c c c c c }
 \kw{alias} 		& 	\kw{else} 		& 	\kw{if} 		&    \kw{store} 	&   \kw{while}     \\
-\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	 \kw{strcmp}  	&  \kw{continue}\\
-\kw{break}      & \kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	
+\kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	 \kw{break}  	&  \kw{continue}\\
+ \kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	&	\kw{read}\\
+\kw{print}		&   \kw{breakpoint}
 \end{tabular}
 
 
@@ -85,7 +86,8 @@ Identifiers are used as symbolic names for constants and aliases for registers. 
 
 %*********%
 \subsection{Literals}
-Only integer literals are permitted in SPL. An integer literal is a sequence of digits representing an integer. Negative integers are represented with a negative sign preceding the sequence of digits.  
+Integer and String literals are permitted in SPL. An integer literal is a sequence of digits representing an integer. Negative integers are represented with a negative sign preceding the sequence of digits.  \\
+A string literal is a sequence of characters which are enclosed within double quotes (" "). eg : \texttt{"alice"}
 
 
 
@@ -170,14 +172,15 @@ Registers, constants, and 2 or more arithmetic expressions connected using arith
 
 \subsection{Logical Expressions}
 
-Logical expressions may be formed by combining arithmetic expressions using relational operators. The relational operators supported by SPL are \begin{verbatim}  <, >, <=, >=, ==, !=
+Logical expressions may be formed by combining arithmetic expressions using relational operators. 
+The relational operators supported by SPL are \begin{verbatim}  <, >, <=, >=, ==, !=
 \end{verbatim}
-Standard  meanings apply to these operators. A relational operator will take in two arguments and return 1 if the relation is valid and 0 otherwise. Logical expressions themselves may be combined using logical operators, \&\& (logical and) ,  $\Vert$ (logical or) and ! (not).
+Standard  meanings apply to these operators. A relational operator will take in two arguments and return 1 if the relation is valid and 0 otherwise. \\
+The relational operators can also be applied to strings. \texttt{>, >, <=, >=} compares two strings lexicographically.  \texttt{!=} and \texttt{==} checks for equality in the case of strings. eg:\\
+     \textit{"adam" $<$ "apple" // This returns 1 }\\
+     \textit{"hansel" == "gretel" // This returns 0 }\\
+Logical expressions themselves may be combined using logical operators, \&\& (logical and) ,  $\Vert$ (logical or) and ! (not).
 
-\subsection{String Comparison}
-The only operation that can be performed on strings stored in memory is string camparison. \textbf{strcmp} is used to compare two strings whose address is stored in the registers that are given as operands. \\
-
- e.g. \textit{strcmp(R2,R5)}
 
 
 \subsection{Addressing Expression}
@@ -208,11 +211,8 @@ An \textbf{alias} statement is used to  associate a register with a name. \textb
 \subsection{Assignment Statement}
 The SPL assignment statement assigns the value of an  expression or value stored in a memory address to a register or a memory address. \textbf{=} is the assignment operator used in SPL. The operand on the right hand side of the operator is assigned to the left hand side. The general syntax is as follows \\
 
-\indent \textit{ Register / Alias / [Address] = Expression / [Address] ;}
+\indent \textit{ Register / Alias / [Address] = Register / Number / String / Expression / [Address] ;}
 
-\subsection{strcpy Statement}
-The SPL \textbf{strcpy} statement copies a string in one memory location to another memory location. Registers which store the  memory location of the destination and the source are given as R{\tiny d} and R{\tiny s} respectively.\\
-\indent \textit{ \textbf{strcpy}(R{\tiny d}, R{\tiny s});}
 
 \subsection{If Statement}
 \textbf{If} statements specify the conditional execution of two branches according to the value of a logical expression. If the expression evaluates to 1, the \textbf{if} branch is executed, otherwise the \textbf{else}  branch is executed. The \textbf{else} part is optional. The general syntax is as follows  \\
@@ -253,6 +253,15 @@ The SPL \textbf{strcpy} statement copies a string in one memory location to anot
 
 \textit{\textbf{ireturn};}
 
+
+\subsection{Read/Print Statements}
+
+The \textbf{read} and \textbf{print} statements are used as standard input and output statements. The \textbf{read} statement reads a value from the standard input device and stores it in a register. \\
+The \textbf{print} statement outputs value of a register or an integer/string literal or value of a memory location.
+
+   \textit{\textbf{read} Register;} 
+   
+   \textit{\textbf{print} Register / Number / String / Expression / [Address];}
 
 \subsection{Load / Store Statements}
 Loading and storing between filesystem and memory is accomplished using \textbf{load} and \textbf{store} statements in SPL. \textbf{load} statement loads the block specified by \textit{block\_number} from the disk to the the page speficied by the \textit{page\_number} in the memory. \textbf{store} statement stores the page specified by \textit{page\_number} in the memory to the the block speficied by the \textit{block\_number} in the disk. The page number and block number can be specified using arithmetic expressions.
