@@ -2,7 +2,7 @@ spl
 lex.yy.c
 y.tab.c
 y.tab.h
-syscode.spl
+syscode.xsm
 doc/spec.aux
 doc/spec.log
 doc/spec.out

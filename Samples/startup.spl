@@ -1,0 +1,29 @@
+//loading int 7
+load (15,9);
+// Loading the init process.
+load (16,13);
+load (17,14);
+load (18,15);
+PTBR = 1024;
+PTLR = 4;
+[ PTBR ] = 16;
+[ PTBR + 1] = 11;
+[ PTBR + 2 ] = 17;
+[ PTBR + 3] = 11;
+[ PTBR + 4 ] = 18;
+[ PTBR + 5] = 11;
+[ PTBR + 6 ] = 19;
+[ PTBR + 7] = 11;
+
+//Setting the entries in PCB
+[READY_LIST + 0] = 0; //Sets PID 0
+[READY_LIST + 1] = 2; //Sets STATE to 2(running)
+[READY_LIST + 2] = 3 * 512; //Sets entry for BP 3 * 512
+[READY_LIST + 3] = 3 * 512; //Sets entry for SP 3 * 512
+[READY_LIST + 4] = 0; //Sets entry for IP 0
+[READY_LIST + 5] = PTBR; 
+[READY_LIST + 6] = PTLR; 
+
+SP = 3 * 512;
+[19 * 512] = 0; //For setting IP as 0
+ireturn;

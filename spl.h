@@ -15,6 +15,9 @@
 #define USER_PROG	8192
 
 extern int linecount;
+unsigned long temp_pos; //temporary lseek
+int out_linecount=0; //no of lines of code generated
+int addrBaseVal;	//Starting Address where the compiled code will be loaded
 int flag_break=0;
 int regcount=0;
 struct tree
@@ -41,10 +44,20 @@ struct tree
 FILE *fp;
 						//start labels
 int labelcount=0;
+struct jmp_point
+{
+	unsigned long pos;
+	char instr[32];
+	struct jmp_point *next;
+	struct jmp_point *points; 
+};
 struct label
 {
 	int i;
-	struct label *next; 
+	unsigned long pos1,pos2;
+	char instr1[32],instr2[32];
+	struct label *next;
+	struct jmp_point *points;  
 };
 struct label *root_label=NULL, *root_while=NULL;
 void push_label()
@@ -52,7 +65,12 @@ void push_label()
 	struct label *temp;
 	temp=malloc(sizeof(struct label));
 	temp->i=labelcount;
-	temp->next=root_label;
+	temp->pos1=0;
+	temp->pos2=0;
+	bzero(temp->instr1,32);
+	bzero(temp->instr2,32);
+	temp->points=NULL;
+	temp->next=root_label;	
 	root_label=temp; 
 	labelcount++;
 }
@@ -71,6 +89,11 @@ void push_while(int n)
 	struct label *temp;
 	temp=malloc(sizeof(struct label));
 	temp->i=n;
+	temp->pos1=0;
+	temp->pos2=0;
+	bzero(temp->instr1,32);
+	bzero(temp->instr2,32);
+	temp->points=NULL;
 	temp->next=root_while;
 	root_while=temp; 
 }
@@ -80,6 +103,31 @@ void pop_while()
 	temp=root_while;
 	root_while=root_while->next;
 	free(temp);
+}
+void add_jmp_point(char instr[32])
+{
+	struct jmp_point *temp;
+	temp=malloc(sizeof(struct jmp_point)); 
+	fflush(fp);
+	temp->pos = ftell(fp);
+	strcpy(temp->instr,instr);
+	temp->next = root_while->points;
+	root_while->points = temp;	
+}
+void use_jmp_points(struct jmp_point *root)
+{
+	if(root == NULL)
+		return;
+	else
+	{
+		fflush(fp);
+		temp_pos = ftell(fp);
+		fseek(fp,root->pos,SEEK_SET);
+		fprintf(fp,"%s %05d",root->instr,addrBaseVal + out_linecount*2);
+		fseek(fp,temp_pos,SEEK_SET);
+		use_jmp_points(root->next);
+		free(root);
+	}
 }
 						///end labels
 						///start constants and aliasing
@@ -326,12 +374,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d,  %s\nLT T%d,  %s\n", regcount,  reg1,  regcount,  reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp,  "GT T%d,  %s\n",  regcount-1, reg1);
 				}					
 			}
@@ -341,11 +391,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "LT T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "LT T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -358,12 +410,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nGT T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "LT T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -373,11 +427,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "GT T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "GT T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -390,12 +446,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nEQ T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "EQ T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -405,11 +463,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "EQ T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "EQ T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -422,12 +482,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nLE T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "GE T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -437,11 +499,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "LE T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "LE T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -454,12 +518,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nGE T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "LE T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -469,11 +535,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "GE T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "GE T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -486,12 +554,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nNE T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "NE T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -501,11 +571,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "NE T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "NE T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -518,12 +590,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nMUL T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MUL T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -533,11 +607,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "MUL T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MUL T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -550,12 +626,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nADD T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "ADD T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -565,27 +643,32 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "ADD T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "ADD T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
 			}			
 			break;
 		case 'x':	//NOT operator
+			out_linecount++;
 			fprintf(fp, "MOV T%d, 1\n", regcount);
 			regcount++;
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1, reg1);
+				out_linecount++;
 				fprintf(fp, "SUB T%d, %s\n", regcount-1, reg1);
 			}
 			else
 			{
 				codegen(root->ptr1);
+				out_linecount++;
 				fprintf(fp, "SUB T%d, T%d\n", regcount-2, regcount-1);
 				regcount--;
 			}
@@ -601,12 +684,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nADD T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "ADD T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -616,11 +701,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "ADD T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "ADD T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -633,14 +720,17 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nSUB T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
+					out_linecount++;
 					fprintf(fp, "MOV T%d, %s\n", regcount, reg1);
 					regcount++;
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "SUB T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}					
@@ -651,11 +741,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "SUB T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "SUB T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -668,12 +760,14 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nMUL T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MUL T%d, %s\n", regcount-1, reg1);
 				}					
 			}
@@ -683,11 +777,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "MUL T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MUL T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -700,14 +796,17 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nDIV T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
+					out_linecount++;
 					fprintf(fp, "MOV T%d, %s\n", regcount, reg1);
 					regcount++;
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "DIV T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}					
@@ -718,11 +817,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "DIV T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "DIV T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -735,14 +836,17 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nMOD T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
 				else
 				{
+					out_linecount++;
 					fprintf(fp, "MOV T%d, %s\n", regcount, reg1);
 					regcount++;
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MOD T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}					
@@ -753,11 +857,13 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "MOD T%d, %s\n", regcount-1, reg2);	
 				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MOD T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
@@ -772,19 +878,23 @@ void codegen(struct tree * root)
 					if(root->ptr2->nodetype=='R')		//[no]=reg
 					{
 						getreg(root->ptr2, reg2);
+						out_linecount++;
 						fprintf(fp, "MOV [%d], %s\n", root->ptr1->ptr1->value, reg2);	
 					}
 					else if(root->ptr2->nodetype=='c')	//[no]=no
 					{
+						out_linecount++;
 						fprintf(fp, "MOV [%d], %d\n", root->ptr1->ptr1->value, root->ptr2->value);
 					}
 					else if(root->ptr2->nodetype=='s')	//[no]=string
 					{
+						out_linecount++;
 						fprintf(fp, "MOV [%d], %s\n", root->ptr1->ptr1->value, root->ptr2->name);
 					}
 					else					//[no]=expr
 					{
 						codegen(root->ptr2);
+						out_linecount++;
 						fprintf(fp, "MOV [%d], T%d\n", root->ptr1->ptr1->value, regcount-1);
 						regcount--;
 					}
@@ -795,19 +905,23 @@ void codegen(struct tree * root)
 					if(root->ptr2->nodetype=='R')		//[expr]=reg
 					{
 						getreg(root->ptr2, reg2);
+						out_linecount++;
 						fprintf(fp, "MOV [T%d], %s\n", regcount-1, reg2);	
 					}
 					else if(root->ptr2->nodetype=='c')	//[expr]=no
 					{
+						out_linecount++;
 						fprintf(fp, "MOV [T%d], %d\n", regcount-1, root->ptr2->value);
 					}
 					else if(root->ptr2->nodetype=='s')	//[expr]=string
 					{
+						out_linecount++;
 						fprintf(fp, "MOV [T%d], %s\n", regcount-1, root->ptr2->name);
 					}
 					else					//[expr]=expr
 					{
 						codegen(root->ptr2);
+						out_linecount++;
 						fprintf(fp, "MOV [T%d], T%d\n", regcount-2, regcount-1);
 						regcount--;
 					}
@@ -820,19 +934,23 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')		//reg=reg
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "MOV %s, %s\n", reg1, reg2);	
 				}
 				else if(root->ptr2->nodetype=='c')	//reg=no
 				{
+					out_linecount++;
 					fprintf(fp, "MOV %s, %d\n", reg1, root->ptr2->value);
 				}
 				else if(root->ptr2->nodetype=='s')	//reg=string
 				{
+					out_linecount++;
 					fprintf(fp, "MOV %s, %s\n", reg1, root->ptr2->name);
 				}
 				else					//reg=expr
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "MOV %s, T%d\n", reg1, regcount-1);
 					regcount--;
 				}			
@@ -840,13 +958,16 @@ void codegen(struct tree * root)
 			break;
 		case 'm':	//addresing
 			codegen(root->ptr1);
+			out_linecount++;
 			fprintf(fp, "MOV T%d, [T%d]\n", regcount-1, regcount-1);
 			break;
 		case 'c':	//constants
+			out_linecount++;
 			fprintf(fp, "MOV T%d, %d\n", regcount, root->value);
 			regcount++;
 			break;
 		case 's':	//string
+			out_linecount++;
 			fprintf(fp, "MOV T%d,  %s\n", regcount, root->name);
 			regcount++;
 			break;
@@ -855,45 +976,85 @@ void codegen(struct tree * root)
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1, reg1);
-				fprintf(fp, "JZ %s, la%d\n", reg1, root_label->i);
+				fflush(fp);
+				root_label->pos1 = ftell(fp);
+				out_linecount++;
+				fprintf(fp, "JZ %s, 00000\n", reg1);
+				sprintf(root_label->instr1, "JZ %s,", reg1);
 			}
 			else
 			{				
 				codegen(root->ptr1);
-				fprintf(fp, "JZ T%d, la%d\n", regcount-1, root_label->i);
+				fflush(fp);
+				root_label->pos1 = ftell(fp);
+				out_linecount++;
+				fprintf(fp, "JZ T%d, 00000\n", regcount-1);
+				sprintf(root_label->instr1, "JZ T%d,", regcount-1);
 				regcount--;
 			}			
 			codegen(root->ptr2);
-			fprintf(fp, "JMP lb%d\n", root_label->i);
-			fprintf(fp, "la%d:\n", root_label->i);
+			fflush(fp);
+			root_label->pos2 = ftell(fp);
+			out_linecount++;
+			fprintf(fp, "JMP 00000\n");
+			sprintf(root_label->instr2, "JMP");
+			fflush(fp);
+			temp_pos = ftell(fp);
+			fseek(fp,root_label->pos1,SEEK_SET);
+			fprintf(fp,"%s %05d",root_label->instr1,addrBaseVal +  out_linecount*2);
+			fseek(fp,temp_pos,SEEK_SET);
 			codegen(root->ptr3);
-			fprintf(fp, "lb%d:\n", pop_label());
+			fflush(fp);
+			temp_pos = ftell(fp);
+			fseek(fp,root_label->pos2,SEEK_SET);
+			fprintf(fp,"%s %05d",root_label->instr2,addrBaseVal +  out_linecount*2);
+			fseek(fp,temp_pos,SEEK_SET);
+			pop_label();
 			break;
 		case 'w':	//WHILE loop
 			push_label();
 			push_while(root_label->i);
-			fprintf(fp, "la%d:\n", root_label->i);
+			root_label->pos1=addrBaseVal +  out_linecount*2;
+			root_while->pos1=addrBaseVal +  out_linecount*2;
 			if(root->ptr1->nodetype=='R')
 			{
 				getreg(root->ptr1, reg1);
-				fprintf(fp, "JZ %s, lb%d\n", reg1, root_label->i);
+				fflush(fp);
+				root_label->pos2 = ftell(fp);
+				out_linecount++;
+				fprintf(fp, "JZ %s, 00000\n", reg1);
+				sprintf(root_label->instr2, "JZ %s,", reg1);
 			}
 			else
 			{				
 				codegen(root->ptr1);
-				fprintf(fp, "JZ T%d, lb%d\n", regcount-1, root_label->i);
+				fflush(fp);
+				root_label->pos2 = ftell(fp);
+				out_linecount++;
+				fprintf(fp, "JZ T%d, 00000\n", regcount-1);
+				sprintf(root_label->instr2, "JZ T%d,", regcount-1);
 				regcount--;
 			}			
 			codegen(root->ptr2);
-			fprintf(fp, "JMP la%d\n", root_label->i);
-			fprintf(fp, "lb%d:\n", pop_label());
+			out_linecount++;
+			fprintf(fp, "JMP %ld\n", root_label->pos1);
+			fflush(fp);
+			temp_pos = ftell(fp);
+			fseek(fp,root_label->pos2,SEEK_SET);
+			fprintf(fp,"%s %05d",root_label->instr2,addrBaseVal +  out_linecount*2);
+			fseek(fp,temp_pos,SEEK_SET);
+			use_jmp_points(root_while->points);
 			pop_while();
+			pop_label();
 			break;
 		case 'b':	//BREAK loop
-			fprintf(fp, "JMP lb%d\n", root_while->i);
+			add_jmp_point("JMP");
+			out_linecount++;
+			fprintf(fp, "JMP 00000\n");
 			break;
 		case 't':	//CONTINUE loop
-			fprintf(fp, "JMP la%d\n", root_while->i);
+			out_linecount++;
+			fprintf(fp, "JMP %ld\n", root_while->pos1);
 			break;
 		case 'L':	//Load
 			if(root->ptr1->nodetype=='R')
@@ -902,13 +1063,18 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "LOAD %s, %s\n", reg1, reg2);						
 				}
 				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
 					fprintf(fp, "LOAD %s, %d\n", reg1, root->ptr2->value);
+				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "LOAD %s, T%d\n", reg1, regcount-1);
 					regcount--;
 				}					
@@ -919,14 +1085,17 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
-					fprintf(fp, "LOAD T%d, %s\n", regcount-1, reg2);	
+					out_linecount++; fprintf(fp, "LOAD T%d, %s\n", regcount-1, reg2);	
 				}
 				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
 					fprintf(fp, "LOAD T%d, %d\n", regcount-1, root->ptr2->value);
+				}
 				else
 				{
 					codegen(root->ptr2);
-					fprintf(fp, "LOAD T%d, T%d\n", regcount-2, regcount-1);
+					out_linecount++; fprintf(fp, "LOAD T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
 				}
 				regcount--;
@@ -939,14 +1108,18 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
+					out_linecount++;
 					fprintf(fp, "STORE %s, %s\n", reg1, reg2);						
 				}
 				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
 					fprintf(fp, "STORE %s, %d\n", reg1, root->ptr2->value);
+				}
 				else
 				{
 					codegen(root->ptr2);
-					fprintf(fp, "STORE %s, T%d\n", reg1, regcount-1);
+					out_linecount++; fprintf(fp, "STORE %s, T%d\n", reg1, regcount-1);
 					regcount--;
 				}					
 			}
@@ -956,13 +1129,17 @@ void codegen(struct tree * root)
 				if(root->ptr2->nodetype=='R')
 				{
 					getreg(root->ptr2, reg2);
-					fprintf(fp, "STORE %s, T%d\n", reg2, regcount-1);	
+					out_linecount++; fprintf(fp, "STORE %s, T%d\n", reg2, regcount-1);	
 				}
 				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
 					fprintf(fp, "STORE %d, T%d\n", root->ptr2->value, regcount-1);
+				}
 				else
 				{
 					codegen(root->ptr2);
+					out_linecount++;
 					fprintf(fp, "STORE T%d, T%d\n", regcount-1, regcount-2);
 					regcount--;
 				}
@@ -970,25 +1147,31 @@ void codegen(struct tree * root)
 			}			
 			break;			
 		case 'I':	//Ireturn
+			out_linecount++;
 			fprintf(fp, "IRET\n");
 			break;
 		case 'R':	//register
 			 getreg(root, reg1);
+			 out_linecount++;
 			 fprintf(fp, "MOV T%d, %s\n", regcount, reg1);
 			 regcount++;
 			 break;
 		case 'h':	//halt
+			out_linecount++;
 			fprintf(fp, "HALT\n");
 			break;
 		case 'C':	//checkpoint
+			out_linecount++;
 			fprintf(fp, "BRKP\n");
 			break;
 		case '1':	//read
 			getreg(root->ptr1, reg1);
+			out_linecount++;
 			fprintf(fp, "IN %s\n", reg1);
 			break;
 		case '2':	//print
 			codegen(root->ptr1);
+			out_linecount++;
 			fprintf(fp, "OUT T%d\n", regcount-1);
 			regcount--;
 			break;

@@ -7,8 +7,8 @@
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT STRING
-%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT STRING
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ PRINT STRING
+%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ PRINT STRING
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -18,6 +18,7 @@
 %%
 body:		definelistpad stmtlist			{
 								codegen($2);
+								out_linecount++;
 								fprintf(fp,"OVER\n");
 							}
 		;
@@ -113,7 +114,7 @@ stmt:		expr ASSIGNOP expr ';'	 		{
 		|CHKPT ';'				{	
 							$$=$1;
 							}
-		|IN ids ';'				{	
+		|READ ids ';'				{	
 								if($2->nodetype!='R')
 								{
 									printf("\n%d:Invalid operand in read!!\n",linecount);
@@ -121,7 +122,7 @@ stmt:		expr ASSIGNOP expr ';'	 		{
 								}							
 								$$=create_tree($1,$2,NULL,NULL);
 							}
-		|OUT expr ';'				{
+		|PRINT expr ';'				{
 								$$=create_tree($1,$2,NULL,NULL);
 							}
 		;
@@ -190,9 +191,40 @@ ids:		ID					{
 							}
 		;
 %%
-int main (void)
+int main (int argc,char **argv)
 {	
-	fp=fopen("code.xsm","w");
+	if(argc < 2)
+	{
+		printf("Incorrect Usage.\nSee usage manual\n");
+		exit(0);
+	}
+	if(strcmp(argv[1],"--os") == 0)
+		addrBaseVal = 1 * 512;
+	else if(strcmp(argv[1],"--int=exhandler") == 0)
+		addrBaseVal = 7 * 512;
+	else if(strcmp(argv[1],"--int=timer") == 0)
+		addrBaseVal = 8 * 512;
+	else if(strcmp(argv[1],"--int=1") == 0)
+		addrBaseVal = 9 * 512;
+	else if(strcmp(argv[1],"--int=2") == 0)
+		addrBaseVal = 10 * 512;
+	else if(strcmp(argv[1],"--int=3") == 0)
+		addrBaseVal = 11 * 512;
+	else if(strcmp(argv[1],"--int=4") == 0)
+		addrBaseVal = 12 * 512;
+	else if(strcmp(argv[1],"--int=5") == 0)
+		addrBaseVal = 13 * 512;
+	else if(strcmp(argv[1],"--int=6") == 0)
+		addrBaseVal = 14 * 512;
+	else if(strcmp(argv[1],"--int=7") == 0)
+		addrBaseVal = 15 * 512;
+	else
+	{
+		printf("Invalid arguement %s\n", argv[1]);
+		exit(0);
+	}	
+	fp=fopen("syscode.xsm","w");
+	out_linecount++;
 	fprintf(fp,"START\n");
 	return yyparse();
 }
