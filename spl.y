@@ -193,37 +193,68 @@ ids:		ID					{
 %%
 int main (int argc,char **argv)
 {	
+	char op_name[15];
 	if(argc < 2)
 	{
 		printf("Incorrect Usage.\nSee usage manual\n");
 		exit(0);
 	}
 	if(strcmp(argv[1],"--os") == 0)
+	{
+		strcpy(op_name,"os_startup.xsm");
 		addrBaseVal = 1 * 512;
+	}
 	else if(strcmp(argv[1],"--int=exhandler") == 0)
+	{
+		strcpy(op_name,"exhandler.xsm");
 		addrBaseVal = 7 * 512;
+	}
 	else if(strcmp(argv[1],"--int=timer") == 0)
+	{
+		strcpy(op_name,"timer.xsm");
 		addrBaseVal = 8 * 512;
+	}
 	else if(strcmp(argv[1],"--int=1") == 0)
+	{
+		strcpy(op_name,"int1.xsm");
 		addrBaseVal = 9 * 512;
+	}
 	else if(strcmp(argv[1],"--int=2") == 0)
+	{
+		strcpy(op_name,"int2.xsm");
 		addrBaseVal = 10 * 512;
+	}
 	else if(strcmp(argv[1],"--int=3") == 0)
+	{
+		strcpy(op_name,"int3.xsm");
 		addrBaseVal = 11 * 512;
+	}
 	else if(strcmp(argv[1],"--int=4") == 0)
+	{
+		strcpy(op_name,"int4.xsm");
 		addrBaseVal = 12 * 512;
+	}
 	else if(strcmp(argv[1],"--int=5") == 0)
+	{
+		strcpy(op_name,"int5.xsm");
 		addrBaseVal = 13 * 512;
+	}
 	else if(strcmp(argv[1],"--int=6") == 0)
+	{
+		strcpy(op_name,"int6.xsm");
 		addrBaseVal = 14 * 512;
+	}
 	else if(strcmp(argv[1],"--int=7") == 0)
+	{
+		strcpy(op_name,"int7.xsm");
 		addrBaseVal = 15 * 512;
+	}
 	else
 	{
 		printf("Invalid arguement %s\n", argv[1]);
 		exit(0);
 	}	
-	fp=fopen("syscode.xsm","w");
+	fp=fopen(op_name,"w");
 	out_linecount++;
 	fprintf(fp,"START\n");
 	return yyparse();
