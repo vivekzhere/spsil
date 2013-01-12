@@ -1,8 +1,0 @@
-APSIL-Doc
-	add SHUTDOWN syscall
-APSIL-Code
-	add SHUTDOWN syscall
-	
-SPL documentation - add breakpoint in keywords
-
-APL documentation - 11 system calls (not 10)

@@ -109,12 +109,12 @@ void create_node(char, char*, int);	//nodetype,name,value
 			
 "read"			{	
 				create_node('1',NULL,-1);
-				return IN;
+				return READ;
 			}
 			
 "print"			{
 				create_node('2',NULL,-1);
-				return OUT;
+				return PRINT;
 			}
 			
 [R]([0-15])  		{
