@@ -19,7 +19,7 @@
 body:		definelistpad stmtlist			{
 								codegen($2);
 								out_linecount++;
-								fprintf(fp,"IRET");
+								fprintf(fp,"HALT");
 							}
 		;
 
