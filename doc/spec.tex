@@ -58,7 +58,7 @@ The following are the reserved words in SPL and it cannot be used as identifiers
 \kw{alias} 		& 	\kw{else} 		& 	\kw{if} 		&    \kw{store} 	&   \kw{while}     \\
 \kw{define} 	& 	\kw{endif}  	& 	\kw{ireturn} 	&	 \kw{break}  	&  \kw{continue}\\
  \kw{do}  		&   \kw{endwhile} 	& 	\kw{load} 		&	\kw{then} 	&	\kw{read}\\
-\kw{print}		&   \kw{breakpoint}
+\kw{print}		&   \kw{breakpoint} &    \lw{halt}s
 \end{tabular}
 
 
@@ -274,6 +274,13 @@ Loading and storing between filesystem and memory is accomplished using \textbf{
 \textbf{breakpoint} statement displays the contents of registers and memory locations at the point where the statement is used. 
 
 \textit{\textbf{breakpoint};}
+
+
+\subsection{halt Statement}
+\textbf{halt} statement is used to halt the machine. 
+
+\textit{\textbf{halt};}
+
 
 
 \end{document}
