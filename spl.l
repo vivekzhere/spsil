@@ -117,7 +117,11 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return PRINT;
 			}
 			
-[R]([0-15])  		{
+[R]([0-9])  		{
+				create_node('R',NULL,atoi(yytext+1));
+				return REG;
+			}
+(R1)([0-5])  		{
 				create_node('R',NULL,atoi(yytext+1));
 				return REG;
 			}
