@@ -6,7 +6,7 @@ i = 2;
 while( i <= n) do
 	j = 2;
 	R3 = 0;
-	while(j <= i) do
+	while(j < i) do
 		if(i % j == 0) then
 			R3 = 1;
 			break;
@@ -14,7 +14,7 @@ while( i <= n) do
 		j = j + 1; 
 	endwhile;
 	if(R3 == 0) then
-		print j;
+		print i;
 	endif;
 	i = i + 1;
 endwhile;
