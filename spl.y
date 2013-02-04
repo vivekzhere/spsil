@@ -204,7 +204,7 @@ int main (int argc,char **argv)
 		strcpy(op_name,"os_startup.xsm");
 		addrBaseVal = 1 * 512;
 	}
-	else if(strcmp(argv[1],"--int=exhandler") == 0)
+	else if(strcmp(argv[1],"--exhandler") == 0)
 	{
 		strcpy(op_name,"exhandler.xsm");
 		addrBaseVal = 7 * 512;
