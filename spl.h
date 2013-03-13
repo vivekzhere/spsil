@@ -1180,3 +1180,28 @@ void codegen(struct tree * root)
 			return;
 	}
 }
+
+void expandpath(char *path) // To expand environment variables in path
+{
+	char *rem_path = strdup(path);
+	char *token = strsep(&rem_path, "/");
+	if(rem_path!=NULL)
+		sprintf(path,"%s/%s",getenv(++token)!=NULL?getenv(token):token-1,rem_path);
+	else
+		sprintf(path,"%s",getenv(++token)!=NULL?getenv(token):token-1);
+}
+
+void changeext(char *pathname)
+{
+	int l = strlen(pathname);
+	int i = l-1;	
+	while(pathname[i] != '/' && i>=0)
+	{
+		if(pathname[i--] == '.')
+		 {
+		 	strcpy(pathname+i+1,".xsm");
+			return;
+		 }
+	}
+	strcat(pathname,".xsm");
+}

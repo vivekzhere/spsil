@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "spl.h"
+extern FILE *yyin;
 %}
 %union
 {
@@ -193,8 +194,10 @@ ids:		ID					{
 %%
 int main (int argc,char **argv)
 {	
+	FILE *input_fp;
+	char filename[200],ch;
 	char op_name[15];
-	if(argc < 2)
+	if(argc < 3)
 	{
 		printf("Incorrect Usage.\nSee usage manual\n");
 		exit(0);
@@ -253,7 +256,16 @@ int main (int argc,char **argv)
 	{
 		printf("Invalid arguement %s\n", argv[1]);
 		exit(0);
-	}	
+	}
+	strcpy(filename,argv[2]);
+	expandpath(filename);
+	input_fp = fopen(filename,"r");
+	if(!input_fp)
+	{
+		printf("Invalid input file\n");
+		return 0;
+	}
+	yyin = input_fp;	
 	fp=fopen(op_name,"w");
 	out_linecount++;
 	fprintf(fp,"START\n");
