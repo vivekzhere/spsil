@@ -12,4 +12,4 @@ doc/spec.dvi
 doc/spec.toc
 *~
 *.xsm
-
+*.temp

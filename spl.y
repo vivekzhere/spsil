@@ -196,65 +196,10 @@ int main (int argc,char **argv)
 {	
 	FILE *input_fp;
 	char filename[200],ch;
-	char op_name[15];
+	char op_name[200];
 	if(argc < 3)
 	{
 		printf("Incorrect Usage.\nSee usage manual\n");
-		exit(0);
-	}
-	if(strcmp(argv[1],"--os") == 0)
-	{
-		strcpy(op_name,"os_startup.xsm");
-		addrBaseVal = 1 * 512;
-	}
-	else if(strcmp(argv[1],"--exhandler") == 0)
-	{
-		strcpy(op_name,"exhandler.xsm");
-		addrBaseVal = 7 * 512;
-	}
-	else if(strcmp(argv[1],"--int=timer") == 0)
-	{
-		strcpy(op_name,"timer.xsm");
-		addrBaseVal = 8 * 512;
-	}
-	else if(strcmp(argv[1],"--int=1") == 0)
-	{
-		strcpy(op_name,"int1.xsm");
-		addrBaseVal = 9 * 512;
-	}
-	else if(strcmp(argv[1],"--int=2") == 0)
-	{
-		strcpy(op_name,"int2.xsm");
-		addrBaseVal = 10 * 512;
-	}
-	else if(strcmp(argv[1],"--int=3") == 0)
-	{
-		strcpy(op_name,"int3.xsm");
-		addrBaseVal = 11 * 512;
-	}
-	else if(strcmp(argv[1],"--int=4") == 0)
-	{
-		strcpy(op_name,"int4.xsm");
-		addrBaseVal = 12 * 512;
-	}
-	else if(strcmp(argv[1],"--int=5") == 0)
-	{
-		strcpy(op_name,"int5.xsm");
-		addrBaseVal = 13 * 512;
-	}
-	else if(strcmp(argv[1],"--int=6") == 0)
-	{
-		strcpy(op_name,"int6.xsm");
-		addrBaseVal = 14 * 512;
-	}
-	else if(strcmp(argv[1],"--int=7") == 0)
-	{
-		strcpy(op_name,"int7.xsm");
-		addrBaseVal = 15 * 512;
-	}
-	else
-	{
-		printf("Invalid arguement %s\n", argv[1]);
 		exit(0);
 	}
 	strcpy(filename,argv[2]);
@@ -265,13 +210,90 @@ int main (int argc,char **argv)
 		printf("Invalid input file\n");
 		return 0;
 	}
-	yyin = input_fp;	
-	fp=fopen(op_name,"w");
+	yyin = input_fp;
+	remfilename(filename);
+	strcpy( op_name, filename );
+	if(strcmp(argv[1],"--os") == 0)
+	{
+		strcat(op_name,"os_startup.xsm");
+		addrBaseVal = 1 * 512;
+	}
+	else if(strcmp(argv[1],"--exhandler") == 0)
+	{
+		strcat(op_name,"exhandler.xsm");
+		addrBaseVal = 7 * 512;
+	}
+	else if(strcmp(argv[1],"--int=timer") == 0)
+	{
+		strcat(op_name,"timer.xsm");
+		addrBaseVal = 8 * 512;
+	}
+	else if(strcmp(argv[1],"--int=1") == 0)
+	{
+		strcat(op_name,"int1.xsm");
+		addrBaseVal = 9 * 512;
+	}
+	else if(strcmp(argv[1],"--int=2") == 0)
+	{
+		strcat(op_name,"int2.xsm");
+		addrBaseVal = 10 * 512;
+	}
+	else if(strcmp(argv[1],"--int=3") == 0)
+	{
+		strcat(op_name,"int3.xsm");
+		addrBaseVal = 11 * 512;
+	}
+	else if(strcmp(argv[1],"--int=4") == 0)
+	{
+		strcat(op_name,"int4.xsm");
+		addrBaseVal = 12 * 512;
+	}
+	else if(strcmp(argv[1],"--int=5") == 0)
+	{
+		strcat(op_name,"int5.xsm");
+		addrBaseVal = 13 * 512;
+	}
+	else if(strcmp(argv[1],"--int=6") == 0)
+	{
+		strcat(op_name,"int6.xsm");
+		addrBaseVal = 14 * 512;
+	}
+	else if(strcmp(argv[1],"--int=7") == 0)
+	{
+		strcat(op_name,"int7.xsm");
+		addrBaseVal = 15 * 512;
+	}
+	else
+	{
+		printf("Invalid arguement %s\n", argv[1]);
+		fclose(input_fp);
+		exit(0);
+	}
+	fp=fopen(".temp","w");
 	out_linecount++;
 	fprintf(fp,"START\n");
-	return yyparse();
+	yyparse();
+	fclose(input_fp);
+	fclose(fp);
+	input_fp = fopen(".temp","r");
+	if(!input_fp)
+	{
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	fp = fopen(op_name,"w");
+	if(!fp)
+	{
+		fclose(input_fp);
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	while( ( ch = fgetc(input_fp) ) != EOF )
+		fputc(ch, fp);
+	fclose(input_fp);
+	fclose(fp);	
+	return 0;
 }
-
 int yyerror (char *msg) 
 {
 	return fprintf (stderr, "%d: %s\n",linecount,msg);

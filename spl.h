@@ -1191,17 +1191,13 @@ void expandpath(char *path) // To expand environment variables in path
 		sprintf(path,"%s",getenv(++token)!=NULL?getenv(token):token-1);
 }
 
-void changeext(char *pathname)
+void remfilename(char *pathname)
 {
 	int l = strlen(pathname);
 	int i = l-1;	
 	while(pathname[i] != '/' && i>=0)
 	{
-		if(pathname[i--] == '.')
-		 {
-		 	strcpy(pathname+i+1,".xsm");
-			return;
-		 }
+		i--;
 	}
-	strcat(pathname,".xsm");
+	pathname[i+1]='\0';	
 }
