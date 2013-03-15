@@ -80,7 +80,7 @@ stmt:		expr ASSIGNOP expr ';'	 		{
 								$$=create_tree($1,$2,$4,NULL);
 								pop_alias();
 								depth--;
-								flag_break=0;
+								flag_break--;
 							}
 		|ALIAS ID REG ';'			{	
 								push_alias($2->name,$3->value);
@@ -179,7 +179,7 @@ elsepad:	ELSE					{
 
 whilepad:	WHILE					{
 								depth++;
-								flag_break=1;
+								flag_break++;
 								$$=$1;
 							}
 		;
