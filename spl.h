@@ -688,6 +688,12 @@ void codegen(struct tree * root)
 					fprintf(fp, "MOV T%d, %s\nADD T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MOV T%d, %s\nADD T%d, %d\n", regcount, reg1, regcount, root->ptr2->value);
+					regcount++;	
+				}
 				else
 				{
 					codegen(root->ptr2);
@@ -703,6 +709,11 @@ void codegen(struct tree * root)
 					getreg(root->ptr2, reg2);
 					out_linecount++;
 					fprintf(fp, "ADD T%d, %s\n", regcount-1, reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "ADD T%d, %d\n", regcount-1, root->ptr2->value);	
 				}
 				else
 				{
@@ -722,6 +733,12 @@ void codegen(struct tree * root)
 					getreg(root->ptr2, reg2);
 					out_linecount+=2;
 					fprintf(fp, "MOV T%d, %s\nSUB T%d, %s\n", regcount, reg1, regcount, reg2);
+					regcount++;	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MOV T%d, %s\nSUB T%d, %d\n", regcount, reg1, regcount, root->ptr2->value);	
 					regcount++;	
 				}
 				else
@@ -744,6 +761,11 @@ void codegen(struct tree * root)
 					out_linecount++;
 					fprintf(fp, "SUB T%d, %s\n", regcount-1, reg2);	
 				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "SUB T%d, %d\n", regcount-1, root->ptr2->value);	
+				}
 				else
 				{
 					codegen(root->ptr2);
@@ -764,6 +786,12 @@ void codegen(struct tree * root)
 					fprintf(fp, "MOV T%d, %s\nMUL T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MOV T%d, %s\nMUL T%d, %d\n", regcount, reg1, regcount, root->ptr2->value);
+					regcount++;		
+				}
 				else
 				{
 					codegen(root->ptr2);
@@ -779,6 +807,11 @@ void codegen(struct tree * root)
 					getreg(root->ptr2, reg2);
 					out_linecount++;
 					fprintf(fp, "MUL T%d, %s\n", regcount-1, reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MUL T%d, %d\n", regcount-1, root->ptr2->value);	
 				}
 				else
 				{
@@ -800,6 +833,12 @@ void codegen(struct tree * root)
 					fprintf(fp, "MOV T%d, %s\nDIV T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MOV T%d, %s\nDIV T%d, %d\n", regcount, reg1, regcount, root->ptr2->value);
+					regcount++;		
+				}
 				else
 				{
 					out_linecount++;
@@ -809,7 +848,8 @@ void codegen(struct tree * root)
 					out_linecount++;
 					fprintf(fp, "DIV T%d, T%d\n", regcount-2, regcount-1);
 					regcount--;
-				}					
+				}		
+							
 			}
 			else
 			{
@@ -819,6 +859,11 @@ void codegen(struct tree * root)
 					getreg(root->ptr2, reg2);
 					out_linecount++;
 					fprintf(fp, "DIV T%d, %s\n", regcount-1, reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "DIV T%d, %d\n", regcount-1, root->ptr2->value);	
 				}
 				else
 				{
@@ -840,6 +885,12 @@ void codegen(struct tree * root)
 					fprintf(fp, "MOV T%d, %s\nMOD T%d, %s\n", regcount, reg1, regcount, reg2);
 					regcount++;	
 				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MOV T%d, %s\nMOD T%d, %d\n", regcount, reg1, regcount, root->ptr2->value);
+					regcount++;		
+				}
 				else
 				{
 					out_linecount++;
@@ -859,6 +910,11 @@ void codegen(struct tree * root)
 					getreg(root->ptr2, reg2);
 					out_linecount++;
 					fprintf(fp, "MOD T%d, %s\n", regcount-1, reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "MOD T%d, %d\n", regcount-1, root->ptr2->value);	
 				}
 				else
 				{
