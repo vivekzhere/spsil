@@ -1,5 +1,6 @@
 %{
 #include "y.tab.h"
+#include "data.h"
 int linecount=1;
 struct define
 {
@@ -117,41 +118,45 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return PRINT;
 			}
 			
-[R]([0-9])  		{
-				create_node('R',NULL,atoi(yytext+1));
+[R]([0-7])  		{
+				create_node('R',NULL,atoi(yytext+1) + R0);
 				return REG;
 			}
-(R1)([0-5])  		{
-				create_node('R',NULL,atoi(yytext+1));
+[S]([0-9])  		{
+				create_node('R',NULL,atoi(yytext+1) + S0);
+				return REG;
+			}
+(S1)([0-5])  		{
+				create_node('R',NULL,atoi(yytext+1) + S0);
 				return REG;
 			}
 			
 				
 "BP"			{
-				create_node('R',NULL,20);
+				create_node('R',NULL,BP_REG);
 				return REG;
 			}
 
 "SP"			{
-				create_node('R',NULL,21);
+				create_node('R',NULL,SP_REG);
 				return REG;
 			}
 
 "IP"			{
-				create_node('R',NULL,22);
+				create_node('R',NULL,IP_REG);
 				return REG;
 			}
 
 "PTBR"			{
-				create_node('R',NULL,23);
+				create_node('R',NULL,PTBR_REG);
 				return REG;
 			}
 "PTLR"			{
-				create_node('R',NULL,24);
+				create_node('R',NULL,PTLR_REG);
 				return REG;
 			}
 "EFR"			{
-				create_node('R',NULL,25);
+				create_node('R',NULL,EFR_REG);
 				return REG;
 			}
 		

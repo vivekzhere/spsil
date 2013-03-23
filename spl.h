@@ -1,4 +1,5 @@
 #include<string.h>
+#include "data.h"
 #define LEGAL 0
 
 //Pre-defined constants in SPL
@@ -344,19 +345,21 @@ struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct
 							///end tree create fns
 void getreg(struct tree *root, char reg[])
 {
-	if(root->value>=0 && root->value<=15)
+	if(root->value >= R0 && root->value <= R7)
 		sprintf(reg, "R%d", root->value);
-	else if(root->value==20)
+	else if(root->value >= S0 && root->value <= S15)
+		sprintf(reg, "S%d", root->value);
+	else if(root->value == BP_REG)
 		sprintf(reg, "BP");
-	else if(root->value==21)
+	else if(root->value == SP_REG)
 		sprintf(reg, "SP");
-	else if(root->value==22)
+	else if(root->value == IP_REG)
 		sprintf(reg, "IP");
-	else if(root->value==23)
+	else if(root->value == PTBR_REG)
 		sprintf(reg, "PTBR");
-	else if(root->value==24)
+	else if(root->value == PTLR_REG)
 		sprintf(reg, "PTLR");
-	else if(root->value==25)
+	else if(root->value == EFR_REG)
 		sprintf(reg, "EFR");		
 }
 void codegen(struct tree * root)
