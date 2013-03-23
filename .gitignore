@@ -2,14 +2,6 @@ spl
 lex.yy.c
 y.tab.c
 y.tab.h
-doc/spec.aux
-doc/spec.log
-doc/spec.out
-doc/spec.synctex.gz
-doc/messaging.aux
-doc/spec.lof
-doc/spec.dvi
-doc/spec.toc
 *~
 *.xsm
 *.temp
