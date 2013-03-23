@@ -1,6 +1,6 @@
-alias i R0;
-alias j R1;
-alias n R12;
+alias i S0;
+alias j S1;
+alias n S2;
 read n;
 i = 2;
 while( i <= n) do

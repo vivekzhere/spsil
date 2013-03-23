@@ -1,2 +1,2 @@
-R1 = "HELLO_WORLD";
-print R1;
+S0 = "HELLO_WORLD";
+print S0;
