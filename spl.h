@@ -346,9 +346,9 @@ struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct
 void getreg(struct tree *root, char reg[])
 {
 	if(root->value >= R0 && root->value <= R7)
-		sprintf(reg, "R%d", root->value);
+		sprintf(reg, "R%d", root->value - R0);
 	else if(root->value >= S0 && root->value <= S15)
-		sprintf(reg, "S%d", root->value);
+		sprintf(reg, "S%d", root->value - S0);
 	else if(root->value == BP_REG)
 		sprintf(reg, "BP");
 	else if(root->value == SP_REG)
