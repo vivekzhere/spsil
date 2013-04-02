@@ -34,7 +34,7 @@ struct tree
 					n-nonterminal
 					b-break		t-continue	m-addresing expr
 					h-halt		C-checkpoint	I-ireturn		
-					1-IN	2-OUT	3-SIN	4-SOUT
+					1-IN	2-OUT	3-INLINE
 						*/
 	char *name;
 	int value;
@@ -1233,6 +1233,10 @@ void codegen(struct tree * root)
 			out_linecount++;
 			fprintf(fp, "OUT T%d\n", regcount-1);
 			regcount--;
+			break;
+		case '3':	//INLINE
+			out_linecount++;
+			fprintf(fp, "%s\n",root->ptr1->name);
 			break;
 		default:
 			printf("Unknown Command %c\n", root->nodetype);		//Debugging
