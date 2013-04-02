@@ -365,7 +365,7 @@ void getreg(struct tree *root, char reg[])
 void codegen(struct tree * root)
 {
 	int n;
-	char reg1[4], reg2[4];
+	char reg1[5], reg2[5];
 	if(root==NULL)
 		return;	
 	switch(root->nodetype)
