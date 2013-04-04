@@ -222,52 +222,52 @@ int main (int argc,char **argv)
 	if(strcmp(argv[1],"--os") == 0)
 	{
 		strcat(op_name,"os_startup.xsm");
-		addrBaseVal = 1 * 512;
+		addrBaseVal = SCRATCHPAD;
 	}
 	else if(strcmp(argv[1],"--exhandler") == 0)
 	{
 		strcat(op_name,"exhandler.xsm");
-		addrBaseVal = 7 * 512;
+		addrBaseVal = EX_HANDLER;
 	}
 	else if(strcmp(argv[1],"--int=timer") == 0)
 	{
 		strcat(op_name,"timer.xsm");
-		addrBaseVal = 8 * 512;
+		addrBaseVal = T_INTERRUPT;
 	}
 	else if(strcmp(argv[1],"--int=1") == 0)
 	{
 		strcat(op_name,"int1.xsm");
-		addrBaseVal = 9 * 512;
+		addrBaseVal = T_INTERRUPT + 1*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else if(strcmp(argv[1],"--int=2") == 0)
 	{
 		strcat(op_name,"int2.xsm");
-		addrBaseVal = 10 * 512;
+		addrBaseVal = T_INTERRUPT + 2*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else if(strcmp(argv[1],"--int=3") == 0)
 	{
 		strcat(op_name,"int3.xsm");
-		addrBaseVal = 11 * 512;
+		addrBaseVal = T_INTERRUPT + 3*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else if(strcmp(argv[1],"--int=4") == 0)
 	{
 		strcat(op_name,"int4.xsm");
-		addrBaseVal = 12 * 512;
+		addrBaseVal = T_INTERRUPT + 4*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else if(strcmp(argv[1],"--int=5") == 0)
 	{
 		strcat(op_name,"int5.xsm");
-		addrBaseVal = 13 * 512;
+		addrBaseVal = T_INTERRUPT + 5*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else if(strcmp(argv[1],"--int=6") == 0)
 	{
 		strcat(op_name,"int6.xsm");
-		addrBaseVal = 14 * 512;
+		addrBaseVal = T_INTERRUPT + 6*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else if(strcmp(argv[1],"--int=7") == 0)
 	{
 		strcat(op_name,"int7.xsm");
-		addrBaseVal = 15 * 512;
+		addrBaseVal = T_INTERRUPT + 7*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else
 	{

@@ -11,9 +11,12 @@
 #define FAT		2560
 #define DISK_LIST	3072
 #define EX_HANDLER	3584
-#define T_INTERRUPT	4096
-#define INTERRUPT	4608
-#define USER_PROG	8192
+#define T_INTERRUPT	4608
+#define INTERRUPT	5632
+#define USER_PROG	12800
+
+#define PAGE_PER_INTERRUPT	2
+#define PAGE_SIZE 		512
 
 extern int linecount;
 unsigned long temp_pos; //temporary lseek
