@@ -1198,17 +1198,17 @@ void codegen(struct tree * root)
 				{
 					getreg(root->ptr2, reg2);
 					out_linecount++;
-					fprintf(fp, "STORE %s, %s\n", reg1, reg2);						
+					fprintf(fp, "STORE %s, %s\n", reg2, reg1);						
 				}
 				else if(root->ptr2->nodetype=='c')
 				{
 					out_linecount++;
-					fprintf(fp, "STORE %s, %d\n", reg1, root->ptr2->value);
+					fprintf(fp, "STORE %s, %d\n", root->ptr2->value, reg1 );
 				}
 				else
 				{
 					codegen(root->ptr2);
-					out_linecount++; fprintf(fp, "STORE %s, T%d\n", reg1, regcount-1);
+					out_linecount++; fprintf(fp, "STORE %s, T%d\n", regcount-1, reg1);
 					regcount--;
 				}					
 			}
