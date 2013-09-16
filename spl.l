@@ -226,7 +226,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return NUM;
 			}
 
-[\"].*[\"]		{	
+[\"][^\"]*[\"]		{	
 				create_node('s',yytext,-1);
 				return STRING;
 			}
