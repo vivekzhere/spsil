@@ -1203,12 +1203,12 @@ void codegen(struct tree * root)
 				else if(root->ptr2->nodetype=='c')
 				{
 					out_linecount++;
-					fprintf(fp, "STORE %s, %d\n", root->ptr2->value, reg1 );
+					fprintf(fp, "STORE %d, %s\n", root->ptr2->value, reg1 );
 				}
 				else
 				{
 					codegen(root->ptr2);
-					out_linecount++; fprintf(fp, "STORE %s, T%d\n", regcount-1, reg1);
+					out_linecount++; fprintf(fp, "STORE T%d, %s\n", regcount-1, reg1);
 					regcount--;
 				}					
 			}
