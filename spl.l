@@ -1,5 +1,6 @@
 %{
 #include "y.tab.h"
+#include "data.h"
 int linecount=1;
 struct define
 {
@@ -12,7 +13,7 @@ struct tree
 	char nodetype;		/*	+,-,*,/,%,=,<,>
 					?-if statement,		I-ireturn,	L-load
 					S-store,	P-strcmp,	Y-strcpy,	w-while,
-					R-register  //value=0-15,20-SP,21-BP,22-IP
+					R-register  //value=0-15,  20-BP,  21-SP,  22-IP, 23-PTBR, 24-PTLR, 25-EFR
 					e-double equals,	l-lessthan or equals
 					g-greaterthan or equals		!-not equal
 					a-AND		o-OR		x-NOT
@@ -20,7 +21,8 @@ struct tree
 					n-nonterminal
 					b-break		t-continue	m-addresing expr
 					h-halt		C-checkpoint	I-ireturn		
-					1-IN	2-OUT	3-SIN	4-SOUT
+					1-read	2-print	s-STRING 
+					3-inline
 						*/
 	char *name;
 	int value;
@@ -77,16 +79,6 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('S',NULL,-1);
 				return STORE;
 			}
-
-"strcmp"		{
-				create_node('P',NULL,-1);
-				return STRCMP;
-			}
-
-"strcpy"		{
-				create_node('Y',NULL,-1);
-				return STRCPY;
-			}
 				
 "then"			{
 				return THEN;
@@ -117,57 +109,63 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return CHKPT;
 			}
 			
-"IN"			{	//not required
+"read"			{	
 				create_node('1',NULL,-1);
-				return IN;
+				return READ;
 			}
 			
-"OUT"			{
+"print"			{
 				create_node('2',NULL,-1);
-				return OUT;
+				return PRINT;
 			}
-			
-"SIN"			{
+
+"inline"		{
 				create_node('3',NULL,-1);
-				return SIN;
-			}
-			
-"SOUT"			{
-				create_node('4',NULL,-1);
-				return SOUT;
-				//not required
+				return INLINE;
 			}
 			
 [R]([0-7])  		{
-				create_node('R',NULL,atoi(yytext+1));
+				create_node('R',NULL,atoi(yytext+1) + R0);
+				return REG;
+			}
+[S]([0-9])  		{
+				create_node('R',NULL,atoi(yytext+1) + S0);
+				return REG;
+			}
+(S1)([0-5])  		{
+				create_node('R',NULL,atoi(yytext+1) + S0);
 				return REG;
 			}
 			
-[S]([0-7])  		{
-				create_node('R',NULL,atoi(yytext+1)+8);
-				return REG;
-			}
 				
 "BP"			{
-				create_node('R',NULL,20);
+				create_node('R',NULL,BP_REG);
 				return REG;
 			}
 
 "SP"			{
-				create_node('R',NULL,21);
+				create_node('R',NULL,SP_REG);
 				return REG;
 			}
 
 "IP"			{
-				create_node('R',NULL,22);
+				create_node('R',NULL,IP_REG);
 				return REG;
 			}
 
-"PID"			{
-				create_node('R',NULL,23);
+"PTBR"			{
+				create_node('R',NULL,PTBR_REG);
 				return REG;
 			}
-			
+"PTLR"			{
+				create_node('R',NULL,PTLR_REG);
+				return REG;
+			}
+"EFR"			{
+				create_node('R',NULL,EFR_REG);
+				return REG;
+			}
+		
 (==)			{
 				create_node('e',NULL,-1);
 				return RELOP;
@@ -227,7 +225,12 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('c',NULL,atoi(yytext));
 				return NUM;
 			}
-		
+
+[\"][^\"]*[\"]		{	
+				create_node('s',yytext,-1);
+				return STRING;
+			}
+					
 [a-zA-Z][a-zA-Z0-9_]*	{
 				create_node('i',yytext,-1);
 				return ID;

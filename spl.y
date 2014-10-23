@@ -1,14 +1,15 @@
 %{
 #include<stdio.h>
 #include<stdlib.h>
-#include "spsil.h"
+#include "spl.h"
+extern FILE *yyin;
 %}
 %union
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE STRCMP STRCPY THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT IN OUT SIN SOUT
-%type<n> IF IRETURN LOAD STORE STRCMP STRCPY WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT IN OUT SIN SOUT
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ PRINT STRING INLINE
+%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ PRINT STRING INLINE
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -18,7 +19,8 @@
 %%
 body:		definelistpad stmtlist			{
 								codegen($2);
-								fprintf(fp,"OVER\n");
+								out_linecount++;
+								fprintf(fp,"HALT");
 							}
 		;
 
@@ -39,7 +41,7 @@ definestmt:	DEFINE ID NUM ';'			{
 								if($3->nodetype=='-')
 									insert_constant($2->name,-1*$4->value);
 								else
-									insert_constant($2->name,$3->value);
+									insert_constant($2->name,$4->value);
 							}
 		;
 
@@ -51,15 +53,7 @@ stmtlist:	stmtlist stmt 				{
 							}
 		;
 
-stmt:		STRCPY '(' expr ',' expr ')' ';'	{	
-								/*if($3->nodetype!='R' || $5->nodetype!='R')
-								{
-									printf("\n%d:Invalid operands in strcpy!!\n",linecount);
-									exit(0);
-								}*/								
-								$$=create_tree($1,$3,$5,NULL);
-							}	
-		|expr ASSIGNOP expr ';'	 		{
+stmt:		expr ASSIGNOP expr ';'	 		{
 								if($1->nodetype=='R' || $1->nodetype=='m')
 								{
 									$2->value=2;
@@ -86,7 +80,7 @@ stmt:		STRCPY '(' expr ',' expr ')' ';'	{
 								$$=create_tree($1,$2,$4,NULL);
 								pop_alias();
 								depth--;
-								flag_break=0;
+								flag_break--;
 							}
 		|ALIAS ID REG ';'			{	
 								push_alias($2->name,$3->value);
@@ -118,31 +112,26 @@ stmt:		STRCPY '(' expr ',' expr ')' ';'	{
 		|HALT ';'				{	
 							$$=$1;
 							}
+		|INLINE STRING ';'			{
+							$2->name++;
+							int temp=strlen($2->name);
+							$2->name[temp-1]='\0';
+							$$=create_tree($1,$2,NULL,NULL);
+							}
 		|CHKPT ';'				{	
 							$$=$1;
 							}
-		|IN ids ';'				{	
+		|READ ids ';'				{	
 								if($2->nodetype!='R')
 								{
-									printf("\n%d:Invalid operand in IN!!\n",linecount);
+									printf("\n%d:Invalid operand in read!!\n",linecount);
 									exit(0);
 								}							
 								$$=create_tree($1,$2,NULL,NULL);
 							}
-		|OUT expr ';'				{
+		|PRINT expr ';'				{
 								$$=create_tree($1,$2,NULL,NULL);
 							}
-		|SIN ids ';'				{	
-								if($2->nodetype!='R')
-								{
-									printf("\n%d:Invalid operand in SIN!!\n",linecount);
-									exit(0);
-								}							
-								$$=create_tree($1,$2,NULL,NULL);
-							}
-		|SOUT expr ';'				{
-								$$=create_tree($1,$2,NULL,NULL);
-							}	
 		;
 	
 				
@@ -173,18 +162,13 @@ expr:		expr ARITHOP1 expr			{
 		|'('expr')'				{
 								$$=$2;
 							}
-		|STRCMP '(' expr ',' expr ')'		{	
-								/*if($3->nodetype!='R' || $5->nodetype!='R')
-								{
-									printf("\n%d:Invalid operands in strcmp!!\n",linecount);
-									exit(0);
-								}	*/							
-								$$=create_tree($1,$3,$5,NULL);
-							}
 		|NUM					{	
 								$$=$1;
 							}
 		|ids					{
+								$$=$1;
+							}
+		|STRING					{
 								$$=$1;
 							}
 		;
@@ -201,7 +185,7 @@ elsepad:	ELSE					{
 
 whilepad:	WHILE					{
 								depth++;
-								flag_break=1;
+								flag_break++;
 								$$=$1;
 							}
 		;
@@ -214,13 +198,108 @@ ids:		ID					{
 							}
 		;
 %%
-int main (void)
+int main (int argc,char **argv)
 {	
-	fp=fopen("spcode.esim","w");
-	 fprintf(fp,"START\n");
-	return yyparse();
+	FILE *input_fp;
+	char filename[200],ch;
+	char op_name[200];
+	if(argc < 3)
+	{
+		printf("Incorrect Usage.\nSee usage manual\n");
+		exit(0);
+	}
+	strcpy(filename,argv[2]);
+	expandpath(filename);
+	input_fp = fopen(filename,"r");
+	if(!input_fp)
+	{
+		printf("Invalid input file\n");
+		return 0;
+	}
+	yyin = input_fp;
+	remfilename(filename);
+	strcpy( op_name, filename );
+	if(strcmp(argv[1],"--os") == 0)
+	{
+		strcat(op_name,"os_startup.xsm");
+		addrBaseVal = SCRATCHPAD;
+	}
+	else if(strcmp(argv[1],"--exhandler") == 0)
+	{
+		strcat(op_name,"exhandler.xsm");
+		addrBaseVal = EX_HANDLER;
+	}
+	else if(strcmp(argv[1],"--int=timer") == 0)
+	{
+		strcat(op_name,"timer.xsm");
+		addrBaseVal = T_INTERRUPT;
+	}
+	else if(strcmp(argv[1],"--int=1") == 0)
+	{
+		strcat(op_name,"int1.xsm");
+		addrBaseVal = T_INTERRUPT + 1*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=2") == 0)
+	{
+		strcat(op_name,"int2.xsm");
+		addrBaseVal = T_INTERRUPT + 2*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=3") == 0)
+	{
+		strcat(op_name,"int3.xsm");
+		addrBaseVal = T_INTERRUPT + 3*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=4") == 0)
+	{
+		strcat(op_name,"int4.xsm");
+		addrBaseVal = T_INTERRUPT + 4*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=5") == 0)
+	{
+		strcat(op_name,"int5.xsm");
+		addrBaseVal = T_INTERRUPT + 5*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=6") == 0)
+	{
+		strcat(op_name,"int6.xsm");
+		addrBaseVal = T_INTERRUPT + 6*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=7") == 0)
+	{
+		strcat(op_name,"int7.xsm");
+		addrBaseVal = T_INTERRUPT + 7*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else
+	{
+		printf("Invalid arguement %s\n", argv[1]);
+		fclose(input_fp);
+		exit(0);
+	}
+	fp=fopen(".temp","w");
+	out_linecount++;
+	fprintf(fp,"START\n");
+	yyparse();
+	fclose(input_fp);
+	fclose(fp);
+	input_fp = fopen(".temp","r");
+	if(!input_fp)
+	{
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	fp = fopen(op_name,"w");
+	if(!fp)
+	{
+		fclose(input_fp);
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	while( ( ch = fgetc(input_fp) ) != EOF )
+		fputc(ch, fp);
+	fclose(input_fp);
+	fclose(fp);	
+	return 0;
 }
-
 int yyerror (char *msg) 
 {
 	return fprintf (stderr, "%d: %s\n",linecount,msg);

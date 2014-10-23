@@ -1,11 +1,7 @@
-spsil
+spl
 lex.yy.c
 y.tab.c
 y.tab.h
-test.sp
-sim.asm
-code.esim
 *~
-doc/spec.aux
-doc/spec.log
-doc/spec.out
+*.xsm
+*.temp
